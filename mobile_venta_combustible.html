@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venta a Terceros - Móvil EVOLTS</title>
+    <!-- Librería oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #070a14;
+            --bg-card: #111827;
+            --border-color: #1e293b;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --accent-blue: #2563EB;
+            --accent-cyan: #0EA5E9;
+            --accent-amber: #F59E0B;
+            --accent-red: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .logo-box {
+            background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%);
+            border: 1px solid rgba(96, 165, 250, 0.35);
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-box img {
+            max-height: 30px;
+            width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .form-header h2 {
+            font-size: 14px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-header h2 i { color: var(--accent-amber); }
+
+        .btn-volver {
+            background: #1F2937;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        /* --- INDICADOR DE PROGRESO --- */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .step-content {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .step-content.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            background-color: #1F2937;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus { border-color: var(--accent-amber); }
+        .form-control.error-input { border-color: var(--accent-red); }
+
+        .rut-error-msg {
+            font-size: 11px;
+            color: #FCA5A5;
+            margin-top: -4px;
+            display: none;
+        }
+
+        /* --- SUGERENCIAS INTELIGENTES (AUTOCOMPLETE) --- */
+        .suggestions-box {
+            background: #1F2937;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            max-height: 140px;
+            overflow-y: auto;
+            display: none;
+            margin-top: -6px;
+        }
+
+        .suggestion-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #93C5FD;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .suggestion-item:hover {
+            background: rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .step-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn-step {
+            flex: 1;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-next, .btn-submit {
+            background: linear-gradient(135deg, var(--accent-amber) 0%, #D97706 100%);
+            color: white;
+        }
+
+        .btn-prev {
+            background: #374151;
+            color: var(--text-main);
+            flex: 0.4;
+        }
+
+        /* --- PIE DE FIRMA --- */
+        .footer-signature {
+            text-align: center;
+            padding-top: 10px;
+            font-size: 10.5px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            margin-top: 10px;
+        }
+        .footer-signature strong { color: #93C5FD; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <!-- Logo Corporativo -->
+        <div class="logo-box">
+            <img src="LogoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción" onerror="this.onerror=null; this.src='LogoEVOLTS_2.png';">
+        </div>
+
+        <div class="form-header">
+            <h2><i class="fa-solid fa-file-invoice-dollar"></i> Venta a Terceros (Paso a Paso)</h2>
+            <a href="mobile_index.html" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Menú</a>
+        </div>
+
+        <div class="step-indicator">
+            <span id="lblStepIndicator">Paso 1 de 4</span>
+            <span id="lblStepTitle" style="color: var(--accent-amber);">Cliente (RUT)</span>
+        </div>
+
+        <form id="formVentaMóvil" onsubmit="finalizarVenta(event)">
+            
+            <!-- PASO 1: RUT Y CLIENTE -->
+            <div class="step-content active" id="step-1">
+                <label>RUT del Cliente / Empresa</label>
+                <input type="text" id="txtRutCliente" class="form-control" placeholder="Ej: 76.543.210-9" oninput="buscarYFiltrarClientes(this)" autocomplete="off">
+                <div id="sugerenciasClientes" class="suggestions-box"></div>
+                <div id="rutErrorMsg" class="rut-error-msg"><i class="fa-solid fa-circle-xmark"></i> RUT Chileno inválido.</div>
+                
+                <label style="margin-top: 6px;">Nombre del Cliente / Destino</label>
+                <input type="text" id="txtNombreCliente" class="form-control" placeholder="Ej: CGE / Fundo Las Araucarias" autocomplete="off">
+                
+                <div class="step-buttons" style="margin-top: 10px;">
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(1)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 2: EQUIPO Y PATENTE -->
+            <div class="step-content" id="step-2">
+                <label>Equipo, Generador o Máquina Destino</label>
+                <input type="text" id="txtEquipoDestino" class="form-control" placeholder="Ej: Generador G-04" autocomplete="off">
+                
+                <label style="margin-top: 6px;">Patente (6 Dígitos - Si aplica)</label>
+                <input type="text" id="txtPatente" class="form-control" placeholder="Ej: JZKW34 (Opcional)" maxlength="6" oninput="validarPatenteChilenaEstricta(this)" autocomplete="off">
+                
+                <div class="step-buttons">
+                    <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(1)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(2)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 3: LITROS Y VALOR -->
+            <div class="step-content" id="step-3">
+                <label>Litros Vendidos / Despachados</label>
+                <input type="number" step="any" min="0" id="txtLitrosVenta" class="form-control" placeholder="0.00" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this); calcularTotal();">
+                
+                <label style="margin-top: 6px;">Valor Unitario ($ / L)</label>
+                <input type="number" step="any" min="0" id="txtValorUnitario" class="form-control" value="1200" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this); calcularTotal();">
+                
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px; font-size: 12px; color: #FCD34D;">
+                    <strong>Total Estimado:</strong> <span id="lblTotalCalculado" style="font-size: 15px; font-weight: bold; color: white;">$ 0</span>
+                </div>
+
+                <div class="step-buttons">
+                    <button type="button" class="btn-step btn-prev" onclick="validarYPasarRetroceso(2)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(3)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 4: CONFIRMAR Y GUARDAR -->
+            <div class="step-content" id="step-4">
+                <div style="background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px;">
+                    <div><span style="color: var(--text-muted);">Cliente:</span> <strong id="resCliente" style="color: white;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Equipo / Patente:</span> <strong id="resEquipo" style="color: white;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Litros:</span> <strong id="resLitros" style="color: #6EE7B7;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Total:</span> <strong id="resTotal" style="color: #34D399;">-</strong></div>
+                </div>
+                <div class="step-buttons">
+                    <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(3)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="submit" class="btn-step btn-submit" id="btnGuardar"><i class="fa-solid fa-floppy-disk"></i> Registrar Venta</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Pie de Firma -->
+    <footer class="footer-signature">
+        EVOLTS Ltda. • Desarrollado por <strong>David G. Parraguez Suazo</strong>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://dkgxrbxmdhlosfsbzikm.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_5i71qWRXd_TesqWYrtckLA_eoOwQm5U';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let pasoActual = 1;
+        const totalPasos = 4;
+        const nombresPasos = ["Cliente (RUT)", "Equipo/Patente", "Litros", "Confirmar"];
+        let baseClientesFrecuentes = {}; 
+        let stockActualCisterna = 0;
+
+        window.onload = async function() {
+            await cargarClientesFrecuentesYStock();
+        };
+
+        async function cargarClientesFrecuentesYStock() {
+            try {
+                const { data, error } = await _supabase.from('ventas_combustible').select('rut_cliente, nombre_cliente');
+                if (!error && data) {
+                    data.forEach(v => {
+                        const rut = (v.rut_cliente || '').trim();
+                        const nombre = (v.nombre_cliente || '').trim();
+                        if (rut && nombre) {
+                            baseClientesFrecuentes[rut] = nombre;
+                        }
+                    });
+                }
+
+                const resCompras = await _supabase.from('compras_cisterna').select('litros');
+                let totalComprado = 0;
+                if (!resCompras.error && resCompras.data) {
+                    resCompras.data.forEach(c => totalComprado += parseFloat(c.litros) || 0);
+                }
+
+                const resCargasFlota = await _supabase.from('cargas_flota').select('litros');
+                let totalDespachadoFlota = 0;
+                if (!resCargasFlota.error && resCargasFlota.data) {
+                    resCargasFlota.data.forEach(c => totalDespachadoFlota += parseFloat(c.litros) || 0);
+                }
+
+                const resVentas = await _supabase.from('ventas_combustible').select('litros');
+                let totalVentas = 0;
+                if (!resVentas.error && resVentas.data) {
+                    resVentas.data.forEach(v => totalVentas += parseFloat(v.litros) || 0);
+                }
+
+                stockActualCisterna = totalComprado - (totalDespachadoFlota + totalVentas);
+            } catch (e) {
+                console.error("Error al inicializar datos:", e);
+            }
+        }
+
+        function validarRutChileno(rutCompleto) {
+            let valor = rutCompleto.replace(/[^0-9kK]/g, '').toUpperCase();
+            if (valor.length < 2) return false;
+            let cuerpo = valor.slice(0, -1);
+            let dv = valor.slice(-1);
+            if (!/^[0-9]+$/.test(cuerpo)) return false;
+            let suma = 0;
+            let multiplo = 2;
+            for (let i = cuerpo.length - 1; i >= 0; i--) {
+                suma += parseInt(cuerpo.charAt(i)) * multiplo;
+                multiplo++;
+                if (multiplo > 7) multiplo = 2;
+            }
+            let dvEsperado = 11 - (suma % 11);
+            let dvCalculado;
+            if (dvEsperado === 11) dvCalculado = '0';
+            else if (dvEsperado === 10) dvCalculado = 'K';
+            else dvCalculado = dvEsperado.toString();
+            return dvCalculado === dv;
+        }
+
+        function formatearRutChileno(valor) {
+            let limpio = valor.replace(/[^0-9kK]/g, '').toUpperCase();
+            if (limpio.length === 0) return '';
+            let cuerpo = limpio.slice(0, -1);
+            let dv = limpio.slice(-1);
+            if (cuerpo.length === 0) return dv;
+            let cuerpoFormat = '';
+            for (let i = cuerpo.length - 1, j = 0; i >= 0; i--, j++) {
+                if (j > 0 && j % 3 === 0) cuerpoFormat = '.' + cuerpoFormat;
+                cuerpoFormat = cuerpo.charAt(i) + cuerpoFormat;
+            }
+            return cuerpoFormat + '-' + dv;
+        }
+
+        function buscarYFiltrarClientes(input) {
+            let valOriginal = input.value;
+            let limpio = valOriginal.replace(/[^0-9kK]/g, '').toUpperCase();
+            
+            const cajaSugerencias = document.getElementById('sugerenciasClientes');
+            cajaSugerencias.innerHTML = '';
+
+            if (!limpio) {
+                cajaSugerencias.style.display = 'none';
+                input.classList.remove('error-input');
+                document.getElementById('rutErrorMsg').style.display = 'none';
+                return;
+            }
+
+            input.value = formatearRutChileno(limpio);
+
+            const listaRuts = Object.keys(baseClientesFrecuentes);
+            const filtrados = listaRuts.filter(r => r.replace(/[^0-9kK]/g, '').includes(limpio));
+
+            if (filtrados.length > 0) {
+                cajaSugerencias.style.display = 'block';
+                filtrados.forEach(rut => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerText = `${rut} - ${baseClientesFrecuentes[rut]}`;
+                    div.onclick = function() {
+                        input.value = rut;
+                        document.getElementById('txtNombreCliente').value = baseClientesFrecuentes[rut];
+                        cajaSugerencias.style.display = 'none';
+                    };
+                    cajaSugerencias.appendChild(div);
+                });
+            } else {
+                cajaSugerencias.style.display = 'none';
+            }
+
+            const errorMsg = document.getElementById('rutErrorMsg');
+            if (limpio.length >= 7) {
+                if (!validarRutChileno(limpio)) {
+                    input.classList.add('error-input');
+                    errorMsg.style.display = 'block';
+                } else {
+                    input.classList.remove('error-input');
+                    errorMsg.style.display = 'none';
+                }
+            } else {
+                input.classList.remove('error-input');
+                errorMsg.style.display = 'none';
+            }
+        }
+
+        function validarPatenteChilenaEstricta(input) {
+            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (val.length > 6) val = val.substring(0, 6);
+            input.value = val;
+        }
+
+        function bloquearLetrasCientificas(e) {
+            if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
+        }
+
+        function limpiarNumeroEstricto(input) {
+            input.value = input.value.replace(/[eE\+\-]/g, '');
+        }
+
+        function calcularTotal() {
+            const litros = parseFloat(document.getElementById('txtLitrosVenta').value) || 0;
+            const unitario = parseFloat(document.getElementById('txtValorUnitario').value) || 0;
+            const total = litros * unitario;
+            document.getElementById('lblTotalCalculado').innerText = "$ " + Math.round(total).toLocaleString('es-CL');
+        }
+
+        function cambiarPaso(nuevoPaso) {
+            document.getElementById(`step-${pasoActual}`).classList.remove('active');
+            pasoActual = nuevoPaso;
+            document.getElementById(`step-${pasoActual}`).classList.add('active');
+
+            document.getElementById('lblStepIndicator').innerText = `Paso ${pasoActual} de ${totalPasos}`;
+            document.getElementById('lblStepTitle').innerText = nombresPasos[pasoActual - 1];
+
+            if (pasoActual === 4) {
+                document.getElementById('resCliente').innerText = `${document.getElementById('txtRutCliente').value} (${document.getElementById('txtNombreCliente').value})`;
+                document.getElementById('resEquipo').innerText = `${document.getElementById('txtEquipoDestino').value} ${document.getElementById('txtPatente').value ? '/ ' + document.getElementById('txtPatente').value : ''}`;
+                document.getElementById('resLitros').innerText = `${parseFloat(document.getElementById('txtLitrosVenta').value || 0).toLocaleString('es-CL')} L`;
+                document.getElementById('resTotal').innerText = document.getElementById('lblTotalCalculado').innerText;
+            }
+
+            setTimeout(() => {
+                if(pasoActual === 1) document.getElementById('txtRutCliente').focus();
+                if(pasoActual === 2) document.getElementById('txtEquipoDestino').focus();
+                if(pasoActual === 3) document.getElementById('txtLitrosVenta').focus();
+            }, 100);
+        }
+
+        function validarYPasar(paso) {
+            if (paso === 1) {
+                const rut = document.getElementById('txtRutCliente').value.trim();
+                const nombre = document.getElementById('txtNombreCliente').value.trim();
+                if (!rut || !nombre) { alert('Debe ingresar el RUT y el Nombre del Cliente.'); return; }
+                if (!validarRutChileno(rut)) { alert('El RUT ingresado no es válido matemáticamente.'); return; }
+            }
+            if (paso === 2) {
+                const equipo = document.getElementById('txtEquipoDestino').value.trim();
+                if (!equipo) { alert('Debe ingresar el equipo, máquina o destino.'); return; }
+                const patente = document.getElementById('txtPatente').value.trim();
+                if (patente && patente.length !== 6) { alert('La patente debe tener exactamente 6 caracteres si se ingresa.'); return; }
+            }
+            if (paso === 3) {
+                const litros = parseFloat(document.getElementById('txtLitrosVenta').value);
+                if (isNaN(litros) || litros <= 0) { alert('Ingrese una cantidad válida de litros.'); return; }
+                if (litros > stockActualCisterna) {
+                    alert(`¡Stock insuficiente! El camión cisterna cuenta con ${stockActualCisterna.toLocaleString('es-CL')} L disponibles.`);
+                    return;
+                }
+            }
+            cambiarPaso(paso + 1);
+        }
+
+        function validarYPasarRetroceso(pasoDestino) {
+            document.getElementById('sugerenciasClientes').style.display = 'none';
+            cambiarPaso(pasoDestino);
+        }
+
+        // --- ALGORITMO INTELIGENTE DE CIERRE Y BARRIDO RETROSPECTIVO (COMPARTIDO CON FLOTA) ---
+        async function verificarYProcesarCierreCisterna(odometroInicialHoy, fechaHoyStr) {
+            const FECHA_INICIO_SISTEMA = "2026-11-01"; // Ancla de arranque en frío
+            let fechaEvaluacion = new Date(fechaHoyStr);
+
+            fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
+
+            while (true) {
+                let fechaStr = fechaEvaluacion.toISOString().split('T')[0];
+
+                if (fechaStr < FECHA_INICIO_SISTEMA) {
+                    break;
+                }
+
+                const { data: cargasDia } = await _supabase
+                    .from('cargas_flota')
+                    .select('id')
+                    .gte('fecha_hora', fechaStr + 'T00:00:00')
+                    .lte('fecha_hora', fechaStr + 'T23:59:59')
+                    .limit(1);
+
+                const { data: ventasDia } = await _supabase
+                    .from('ventas_combustible')
+                    .select('id')
+                    .gte('fecha_hora', fechaStr + 'T00:00:00')
+                    .lte('fecha_hora', fechaStr + 'T23:59:59')
+                    .limit(1);
+
+                let huboMovimiento = (cargasDia && cargasDia.length > 0) || (ventasDia && ventasDia.length > 0);
+
+                if (huboMovimiento) {
+                    await _supabase.from('cierre_diario_cisterna').upsert([
+                        {
+                            fecha: fechaStr,
+                            odometro_final: odometroInicialHoy
+                        }
+                    ], { onConflict: ['fecha'] });
+                    break;
+                } else {
+                    await _supabase.from('cierre_diario_cisterna').upsert([
+                        {
+                            fecha: fechaStr,
+                            odometro_inicial: odometroInicialHoy,
+                            odometro_final: odometroInicialHoy,
+                            observacion: 'Jornada Sin Movimiento / Inactiva'
+                        }
+                    ], { onConflict: ['fecha'] });
+
+                    fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
+                }
+            }
+        }
+
+        async function finalizarVenta(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardar');
+            btn.disabled = true;
+            btn.innerText = 'Verificando jornada...';
+
+            const fechaHoraActual = new Date().toISOString();
+            const fechaSoloHoy = fechaHoraActual.split('T')[0];
+            const rutCliente = document.getElementById('txtRutCliente').value.trim();
+            const nombreCliente = document.getElementById('txtNombreCliente').value.trim();
+            const equipoDestino = document.getElementById('txtEquipoDestino').value.trim();
+            const patente = document.getElementById('txtPatente').value.trim().toUpperCase() || 'N/A';
+            const litros = parseFloat(document.getElementById('txtLitrosVenta').value) || 0;
+            const valorUnitario = parseFloat(document.getElementById('txtValorUnitario').value) || 0;
+            const totalEstimado = litros * valorUnitario;
+
+            try {
+                // 1. VERIFICAR SI ES EL PRIMER MOVIMIENTO DEL DÍA (GLOBAL: CARGAS O VENTAS)
+                const { data: cargasHoy } = await _supabase
+                    .from('cargas_flota')
+                    .select('id')
+                    .gte('fecha_hora', fechaSoloHoy + 'T00:00:00')
+                    .lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
+
+                const { data: ventasHoy } = await _supabase
+                    .from('ventas_combustible')
+                    .select('id')
+                    .gte('fecha_hora', fechaSoloHoy + 'T00:00:00')
+                    .lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
+
+                let totalMovimientosHoy = (cargasHoy ? cargasHoy.length : 0) + (ventasHoy ? ventasHoy.length : 0);
+
+                if (totalMovimientosHoy === 0) {
+                    let inputCisterna = prompt("⚠️ Es la primera transacción del día.\nIngrese el Odómetro / Horómetro Inicial de la Bomba del Cisterna:");
+                    if (inputCisterna === null) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Venta';
+                        return;
+                    }
+
+                    let odometroCisterna = parseFloat(inputCisterna);
+                    if (isNaN(odometroCisterna) || odometroCisterna < 0) {
+                        alert("Debe ingresar un valor numérico válido para el contador del cisterna.");
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Venta';
+                        return;
+                    }
+
+                    btn.innerText = 'Registrando apertura cisterna...';
+                    await _supabase.from('cierre_diario_cisterna').upsert([
+                        {
+                            fecha: fechaSoloHoy,
+                            odometro_inicial: odometroCisterna
+                        }
+                    ], { onConflict: ['fecha'] });
+
+                    btn.innerText = 'Procesando cierres anteriores...';
+                    await verificarYProcesarCierreCisterna(odometroCisterna, fechaSoloHoy);
+                }
+
+                // 2. GUARDAR LA VENTA EN SUPABASE
+                btn.innerText = 'Grabando venta...';
+                const { error } = await _supabase.from('ventas_combustible').insert([
+                    {
+                        fecha_hora: fechaHoraActual,
+                        rut_cliente: rutCliente,
+                        nombre_cliente: nombreCliente,
+                        equipo_destino: equipoDestino,
+                        patente: patente,
+                        litros: litros,
+                        valor_unitario: valorUnitario,
+                        total_estimado: totalEstimado,
+                        created_at: fechaHoraActual
+                    }
+                ]);
+
+                if (error) throw error;
+
+                alert('¡Venta registrada con éxito y control de cisterna actualizado!');
+                window.location.href = 'mobile_index.html';
+            } catch (err) {
+                alert('Error al guardar la venta: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Venta';
+            }
+        }
+    </script>
+</body>
+</html>

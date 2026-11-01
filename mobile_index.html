@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVOLTS Ltda. - Control Móvil Cisterna</title>
+    <!-- Librería oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #070a14;
+            --bg-card: #111827;
+            --border-color: #1e293b;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --accent-blue: #2563EB;
+            --accent-cyan: #0EA5E9;
+            --accent-amber: #F59E0B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 16px;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* --- LOGO CORPORATIVO --- */
+        .logo-box {
+            background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%);
+            border: 1px solid rgba(96, 165, 250, 0.35);
+            padding: 14px 18px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        .logo-box img {
+            max-height: 35px;
+            width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+        }
+
+        .logo-subtitle {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* --- TARJETA PRINCIPAL DE STOCK Y COSTO --- */
+        .hero-dashboard-card {
+            background: linear-gradient(145deg, #111827 0%, #0d1322 100%);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+        }
+
+        .hero-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .hero-stock-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #6EE7B7;
+            text-shadow: 0 2px 10px rgba(110, 231, 183, 0.2);
+            margin-bottom: 12px;
+        }
+
+        .hero-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 12px 0;
+            width: 100%;
+        }
+
+        .hero-cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 6px;
+        }
+
+        .hero-cost-label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .hero-cost-value {
+            font-size: 15px;
+            font-weight: 800;
+            color: #93C5FD;
+        }
+
+        /* --- BOTONES DE MENÚ PRINCIPAL --- */
+        .menu-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-menu {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 18px;
+            color: white;
+            font-size: 14.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-menu:active {
+            transform: scale(0.98);
+        }
+
+        .btn-menu i {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .btn-carga { border-left: 4px solid var(--accent-blue); }
+        .btn-carga i { color: var(--accent-blue); }
+
+        .btn-venta { border-left: 4px solid var(--accent-amber); }
+        .btn-venta i { color: var(--accent-amber); }
+
+        .btn-text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .btn-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        /* --- PIE DE FIRMA CORPORATIVO --- */
+        .footer-signature {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .footer-signature strong {
+            color: #93C5FD;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <!-- Logo Corporativo Oficial -->
+        <div class="logo-box">
+            <img src="LogoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción" onerror="this.onerror=null; this.src='LogoEVOLTS_2.png';">
+            <div class="logo-subtitle">Control Operativo Camión Cisterna</div>
+        </div>
+
+        <!-- Tarjeta Principal: Stock en Litros + Costo Promedio -->
+        <div class="hero-dashboard-card">
+            <div class="hero-title"><i class="fa-solid fa-droplet" style="color: var(--accent-cyan); margin-right: 4px;"></i> Stock Actual en Cisterna</div>
+            <div class="hero-stock-value" id="lblStockLive">Cargando...</div>
+            
+            <div class="hero-divider"></div>
+
+            <div class="hero-cost-row">
+                <span class="hero-cost-label"><i class="fa-solid fa-tag" style="color: #93C5FD; margin-right: 4px;"></i> Costo Promedio Litro:</span>
+                <span class="hero-cost-value" id="lblCostoLitro">Calculando...</span>
+            </div>
+        </div>
+
+        <!-- Botones de Acción Operativa -->
+        <div class="menu-grid">
+            <a href="mobile_carga_flota.html" class="btn-menu btn-carga">
+                <i class="fa-solid fa-gas-pump"></i>
+                <div class="btn-text-group">
+                    <div>1. Registrar Carga a Flota</div>
+                    <div class="btn-desc">Despacho interno a vehículos de la empresa</div>
+                </div>
+            </a>
+
+            <a href="mobile_venta_combustible.html" class="btn-menu btn-venta">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <div class="btn-text-group">
+                    <div>2. Registrar Venta / Terceros</div>
+                    <div class="btn-desc">Despacho externo de combustible</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Pie de Firma Corporativo -->
+    <footer class="footer-signature">
+        EVOLTS Ltda. • Software desarrollado por <strong>David G. Parraguez Suazo</strong>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://dkgxrbxmdhlosfsbzikm.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_5i71qWRXd_TesqWYrtckLA_eoOwQm5U';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.onload = async function() {
+            try {
+                const [compras, cargas, ventas] = await Promise.all([
+                    _supabase.from('compras_cisterna').select('*'),
+                    _supabase.from('cargas_flota').select('litros'),
+                    _supabase.from('ventas_combustible').select('litros')
+                ]);
+
+                const listaCompras = compras.data || [];
+                let totalLitrosCompras = 0;
+                let totalMontoCompras = 0;
+
+                listaCompras.forEach(c => {
+                    const l = parseFloat(c.litros) || 0;
+                    const m = parseFloat(c.costo_total || c.total || 0);
+                    totalLitrosCompras += l;
+                    totalMontoCompras += m;
+                });
+
+                let totalCargas = (cargas.data || []).reduce((acc, x) => acc + (parseFloat(x.litros) || 0), 0);
+                let totalVentas = (ventas.data || []).reduce((acc, x) => acc + (parseFloat(x.litros) || 0), 0);
+
+                let stockActual = totalLitrosCompras - totalCargas - totalVentas;
+                document.getElementById('lblStockLive').innerText = stockActual.toLocaleString('es-CL') + ' L';
+
+                let costoPromedio = totalLitrosCompras > 0 ? (totalMontoCompras / totalLitrosCompras) : 0;
+                if (costoPromedio > 0) {
+                    document.getElementById('lblCostoLitro').innerText = '$ ' + Math.round(costoPromedio).toLocaleString('es-CL');
+                } else {
+                    document.getElementById('lblCostoLitro').innerText = '$ 1.200 (Est.)';
+                }
+
+            } catch (err) {
+                console.error("Error al obtener datos en vivo:", err);
+                document.getElementById('lblStockLive').innerText = 'Sin conexión';
+                document.getElementById('lblCostoLitro').innerText = '---';
+            }
+        };
+    </script>
+</body>
+</html>
