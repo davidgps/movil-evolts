@@ -69,6 +69,14 @@
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
         }
 
+        .logo-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
         .form-header {
             display: flex;
             align-items: center;
@@ -221,9 +229,9 @@
 <body>
 
     <div class="form-container">
-        <!-- Logo Corporativo -->
+        <!-- Logo Corporativo Corregido -->
         <div class="logo-box">
-            <img src="LogoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
+            <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
             <div class="logo-subtitle">Control Operativo Camión Cisterna</div>
         </div>
 
@@ -253,7 +261,7 @@
                 </div>
             </div>
 
-            <!-- PASO 2: EQUIPO O PATENTE ASOCIADA (LIMPIO Y SIN REDUNDANCIAS) -->
+            <!-- PASO 2: EQUIPO O PATENTE ASOCIADA -->
             <div class="step-content" id="step-2">
                 <label>Buscar Equipo o Patente del Cliente</label>
                 <input type="text" id="txtBuscadorEquipo" class="form-control" placeholder="Escriba para filtrar (Ej: GEN o JZ)" oninput="filtrarEquiposCliente(this.value)" autocomplete="off">
@@ -426,7 +434,7 @@
             }
         }
 
-        // BÚSQUEDA INTELIGENTE PREDICTIVA PARA EQUIPOS (SIN REPETIR CÓDIGO/PATENTE)
+        // BÚSQUEDA INTELIGENTE PREDICTIVA PARA EQUIPOS (SIN REPETIR CÓDIGO)
         function filtrarEquiposCliente(textoBusqueda) {
             const rutSeleccionado = document.getElementById('txtRutCliente').value.trim();
             const cajaSugerencias = document.getElementById('sugerenciasEquipos');
@@ -452,7 +460,6 @@
                 filtrados.forEach(eq => {
                     const div = document.createElement('div');
                     div.className = 'suggestion-item';
-                    // Formato limpio sin repetir el código/patente en la tarjeta: [Tipo] Descripción
                     div.innerText = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
                     div.onclick = function() {
                         const textoSeleccionadoFormato = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
