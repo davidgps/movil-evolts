@@ -143,13 +143,13 @@
         }
 
         .form-control:focus { border-color: var(--accent-amber); }
-        .form-control.error-input { border-color: var(--accent-red); }
-
-        .rut-error-msg {
-            font-size: 11px;
-            color: #FCA5A5;
-            margin-top: -4px;
-            display: none;
+        
+        .form-control[readonly] {
+            background-color: #111827;
+            color: #93C5FD;
+            border-color: rgba(147, 197, 253, 0.3);
+            cursor: not-allowed;
+            font-weight: 600;
         }
 
         /* --- SUGERENCIAS INTELIGENTES (AUTOCOMPLETE) --- */
@@ -223,7 +223,7 @@
     <div class="form-container">
         <!-- Logo Corporativo -->
         <div class="logo-box">
-            <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
+            <img src="LogoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
             <div class="logo-subtitle">Control Operativo Camión Cisterna</div>
         </div>
 
@@ -242,27 +242,32 @@
             <!-- PASO 1: RUT Y CLIENTE -->
             <div class="step-content active" id="step-1">
                 <label>RUT del Cliente / Empresa</label>
-                <input type="text" id="txtRutCliente" class="form-control" placeholder="Ej: 76.543.210-9" oninput="buscarYFiltrarClientes(this)" autocomplete="off">
+                <input type="text" id="txtRutCliente" class="form-control" placeholder="Ej: 7177056-7" oninput="formatearYBuscarRut(this)" autocomplete="off">
                 <div id="sugerenciasClientes" class="suggestions-box"></div>
-                <div id="rutErrorMsg" class="rut-error-msg"><i class="fa-solid fa-circle-xmark"></i> RUT Chileno inválido.</div>
                 
-                <label style="margin-top: 6px;">Nombre del Cliente / Destino</label>
-                <input type="text" id="txtNombreCliente" class="form-control" placeholder="Ej: CGE / Fundo Las Araucarias" autocomplete="off">
+                <label style="margin-top: 6px;">Nombre del Cliente / Tercero</label>
+                <input type="text" id="txtNombreCliente" class="form-control" placeholder="Ej: CGE / Fundo Las Araucarias" oninput="buscarPorNombre(this.value)" autocomplete="off">
                 
                 <div class="step-buttons" style="margin-top: 10px;">
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(1)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- PASO 2: EQUIPO Y PATENTE -->
+            <!-- PASO 2: EQUIPO O PATENTE ASOCIADA (LIMPIO Y SIN REDUNDANCIAS) -->
             <div class="step-content" id="step-2">
-                <label>Equipo, Generador o Máquina Destino</label>
-                <input type="text" id="txtEquipoDestino" class="form-control" placeholder="Ej: Generador G-04" autocomplete="off">
+                <label>Buscar Equipo o Patente del Cliente</label>
+                <input type="text" id="txtBuscadorEquipo" class="form-control" placeholder="Escriba para filtrar (Ej: GEN o JZ)" oninput="filtrarEquiposCliente(this.value)" autocomplete="off">
+                <div id="sugerenciasEquipos" class="suggestions-box"></div>
+
+                <label style="margin-top: 8px;">Equipo / Vehículo Seleccionado</label>
+                <input type="text" id="txtEquipoSeleccionado" class="form-control" placeholder="Seleccione arriba de la lista..." readonly autocomplete="off">
                 
-                <label style="margin-top: 6px;">Patente (6 Dígitos - Si aplica)</label>
-                <input type="text" id="txtPatente" class="form-control" placeholder="Ej: JZKW34 (Opcional)" maxlength="6" oninput="validarPatenteChilenaEstricta(this)" autocomplete="off">
-                
-                <div class="step-buttons">
+                <!-- Campos ocultos técnicos para guardar los valores limpios al registrar la venta -->
+                <input type="hidden" id="txtTipoEquipo">
+                <input type="hidden" id="txtIdentificadorEquipo">
+                <input type="hidden" id="txtDescEquipo">
+
+                <div class="step-buttons" style="margin-top: 16px;">
                     <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(1)"><i class="fa-solid fa-arrow-left"></i></button>
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(2)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
@@ -290,7 +295,7 @@
             <div class="step-content" id="step-4">
                 <div style="background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px;">
                     <div><span style="color: var(--text-muted);">Cliente:</span> <strong id="resCliente" style="color: white;">-</strong></div>
-                    <div><span style="color: var(--text-muted);">Equipo / Patente:</span> <strong id="resEquipo" style="color: white;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Equipo / Destino:</span> <strong id="resEquipo" style="color: white;">-</strong></div>
                     <div><span style="color: var(--text-muted);">Litros:</span> <strong id="resLitros" style="color: #6EE7B7;">-</strong></div>
                     <div><span style="color: var(--text-muted);">Total:</span> <strong id="resTotal" style="color: #34D399;">-</strong></div>
                 </div>
@@ -315,44 +320,34 @@
 
         let pasoActual = 1;
         const totalPasos = 4;
-        const nombresPasos = ["Cliente (RUT)", "Equipo/Patente", "Litros", "Confirmar"];
-        let baseClientesFrecuentes = {}; 
+        const nombresPasos = ["Cliente (RUT)", "Equipo / Patente", "Litros", "Confirmar"];
+        let baseMaestroTerceros = []; 
+        let baseEquiposTerceros = [];
         let stockActualCisterna = 0;
 
         window.onload = async function() {
-            await cargarClientesFrecuentesYStock();
+            await cargarDatosIniciales();
         };
 
-        async function cargarClientesFrecuentesYStock() {
+        async function cargarDatosIniciales() {
             try {
-                const { data, error } = await _supabase.from('ventas_combustible').select('rut_cliente, nombre_cliente');
-                if (!error && data) {
-                    data.forEach(v => {
-                        const rut = (v.rut_cliente || '').trim();
-                        const nombre = (v.nombre_cliente || '').trim();
-                        if (rut && nombre) {
-                            baseClientesFrecuentes[rut] = nombre;
-                        }
-                    });
-                }
+                const { data: tercerosData } = await _supabase.from('maestro_terceros').select('*');
+                if (tercerosData) baseMaestroTerceros = tercerosData;
+
+                const { data: equiposData } = await _supabase.from('maestro_equipos_terceros').select('*');
+                if (equiposData) baseEquiposTerceros = equiposData;
 
                 const resCompras = await _supabase.from('compras_cisterna').select('litros');
                 let totalComprado = 0;
-                if (!resCompras.error && resCompras.data) {
-                    resCompras.data.forEach(c => totalComprado += parseFloat(c.litros) || 0);
-                }
+                if (resCompras.data) resCompras.data.forEach(c => totalComprado += parseFloat(c.litros) || 0);
 
                 const resCargasFlota = await _supabase.from('cargas_flota').select('litros');
                 let totalDespachadoFlota = 0;
-                if (!resCargasFlota.error && resCargasFlota.data) {
-                    resCargasFlota.data.forEach(c => totalDespachadoFlota += parseFloat(c.litros) || 0);
-                }
+                if (resCargasFlota.data) resCargasFlota.data.forEach(c => totalDespachadoFlota += parseFloat(c.litros) || 0);
 
                 const resVentas = await _supabase.from('ventas_combustible').select('litros');
                 let totalVentas = 0;
-                if (!resVentas.error && resVentas.data) {
-                    resVentas.data.forEach(v => totalVentas += parseFloat(v.litros) || 0);
-                }
+                if (resVentas.data) resVentas.data.forEach(v => totalVentas += parseFloat(v.litros) || 0);
 
                 stockActualCisterna = totalComprado - (totalDespachadoFlota + totalVentas);
             } catch (e) {
@@ -360,69 +355,38 @@
             }
         }
 
-        function validarRutChileno(rutCompleto) {
-            let valor = rutCompleto.replace(/[^0-9kK]/g, '').toUpperCase();
-            if (valor.length < 2) return false;
-            let cuerpo = valor.slice(0, -1);
-            let dv = valor.slice(-1);
-            if (!/^[0-9]+$/.test(cuerpo)) return false;
-            let suma = 0;
-            let multiplo = 2;
-            for (let i = cuerpo.length - 1; i >= 0; i--) {
-                suma += parseInt(cuerpo.charAt(i)) * multiplo;
-                multiplo++;
-                if (multiplo > 7) multiplo = 2;
-            }
-            let dvEsperado = 11 - (suma % 11);
-            let dvCalculado;
-            if (dvEsperado === 11) dvCalculado = '0';
-            else if (dvEsperado === 10) dvCalculado = 'K';
-            else dvCalculado = dvEsperado.toString();
-            return dvCalculado === dv;
-        }
-
-        function formatearRutChileno(valor) {
-            let limpio = valor.replace(/[^0-9kK]/g, '').toUpperCase();
-            if (limpio.length === 0) return '';
-            let cuerpo = limpio.slice(0, -1);
-            let dv = limpio.slice(-1);
-            if (cuerpo.length === 0) return dv;
-            let cuerpoFormat = '';
-            for (let i = cuerpo.length - 1, j = 0; i >= 0; i--, j++) {
-                if (j > 0 && j % 3 === 0) cuerpoFormat = '.' + cuerpoFormat;
-                cuerpoFormat = cuerpo.charAt(i) + cuerpoFormat;
-            }
-            return cuerpoFormat + '-' + dv;
-        }
-
-        function buscarYFiltrarClientes(input) {
-            let valOriginal = input.value;
-            let limpio = valOriginal.replace(/[^0-9kK]/g, '').toUpperCase();
+        function formatearYBuscarRut(input) {
+            let valor = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
+            if (valor.length > 9) valor = valor.substring(0, 9);
             
-            const cajaSugerencias = document.getElementById('sugerenciasClientes');
-            cajaSugerencias.innerHTML = '';
-
-            if (!limpio) {
-                cajaSugerencias.style.display = 'none';
-                input.classList.remove('error-input');
-                document.getElementById('rutErrorMsg').style.display = 'none';
+            if (valor.length === 0) {
+                input.value = '';
+                document.getElementById('sugerenciasClientes').style.display = 'none';
                 return;
             }
 
-            input.value = formatearRutChileno(limpio);
+            let cuerpo = valor.slice(0, -1);
+            let dv = valor.slice(-1);
+            input.value = cuerpo.length > 0 ? cuerpo + '-' + dv : dv;
 
-            const listaRuts = Object.keys(baseClientesFrecuentes);
-            const filtrados = listaRuts.filter(r => r.replace(/[^0-9kK]/g, '').includes(limpio));
+            const queryLimpia = valor.toLowerCase();
+            const cajaSugerencias = document.getElementById('sugerenciasClientes');
+            cajaSugerencias.innerHTML = '';
+
+            const filtrados = baseMaestroTerceros.filter(t => {
+                const rutLimpioDb = (t.rut || '').replace(/[^0-9kK]/g, '').toLowerCase();
+                return rutLimpioDb.includes(queryLimpia);
+            });
 
             if (filtrados.length > 0) {
                 cajaSugerencias.style.display = 'block';
-                filtrados.forEach(rut => {
+                filtrados.forEach(tercero => {
                     const div = document.createElement('div');
                     div.className = 'suggestion-item';
-                    div.innerText = `${rut} - ${baseClientesFrecuentes[rut]}`;
+                    div.innerText = `${tercero.rut} - ${tercero.nombre}`;
                     div.onclick = function() {
-                        input.value = rut;
-                        document.getElementById('txtNombreCliente').value = baseClientesFrecuentes[rut];
+                        document.getElementById('txtRutCliente').value = tercero.rut;
+                        document.getElementById('txtNombreCliente').value = tercero.nombre;
                         cajaSugerencias.style.display = 'none';
                     };
                     cajaSugerencias.appendChild(div);
@@ -430,26 +394,80 @@
             } else {
                 cajaSugerencias.style.display = 'none';
             }
+        }
 
-            const errorMsg = document.getElementById('rutErrorMsg');
-            if (limpio.length >= 7) {
-                if (!validarRutChileno(limpio)) {
-                    input.classList.add('error-input');
-                    errorMsg.style.display = 'block';
-                } else {
-                    input.classList.remove('error-input');
-                    errorMsg.style.display = 'none';
-                }
+        function buscarPorNombre(textoBusqueda) {
+            const textoLimpio = textoBusqueda.trim().toLowerCase();
+            const cajaSugerencias = document.getElementById('sugerenciasClientes');
+            cajaSugerencias.innerHTML = '';
+
+            if (!textoLimpio || textoLimpio.length < 1) {
+                cajaSugerencias.style.display = 'none';
+                return;
+            }
+
+            const filtrados = baseMaestroTerceros.filter(t => (t.nombre || '').toLowerCase().includes(textoLimpio));
+
+            if (filtrados.length > 0) {
+                cajaSugerencias.style.display = 'block';
+                filtrados.forEach(tercero => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerText = `${tercero.rut} - ${tercero.nombre}`;
+                    div.onclick = function() {
+                        document.getElementById('txtRutCliente').value = tercero.rut;
+                        document.getElementById('txtNombreCliente').value = tercero.nombre;
+                        cajaSugerencias.style.display = 'none';
+                    };
+                    cajaSugerencias.appendChild(div);
+                });
             } else {
-                input.classList.remove('error-input');
-                errorMsg.style.display = 'none';
+                cajaSugerencias.style.display = 'none';
             }
         }
 
-        function validarPatenteChilenaEstricta(input) {
-            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            if (val.length > 6) val = val.substring(0, 6);
-            input.value = val;
+        // BÚSQUEDA INTELIGENTE PREDICTIVA PARA EQUIPOS (SIN REPETIR CÓDIGO/PATENTE)
+        function filtrarEquiposCliente(textoBusqueda) {
+            const rutSeleccionado = document.getElementById('txtRutCliente').value.trim();
+            const cajaSugerencias = document.getElementById('sugerenciasEquipos');
+            cajaSugerencias.innerHTML = '';
+
+            const textoLimpio = textoBusqueda.trim().toLowerCase();
+            if (!textoLimpio || textoLimpio.length < 1) {
+                cajaSugerencias.style.display = 'none';
+                return;
+            }
+
+            const equiposDelCliente = baseEquiposTerceros.filter(e => (e.rut_cliente || '').trim() === rutSeleccionado);
+
+            const filtrados = equiposDelCliente.filter(eq => {
+                const ident = (eq.identificador || '').toLowerCase();
+                const tipo = (eq.tipo || '').toLowerCase();
+                const desc = (eq.descripcion || '').toLowerCase();
+                return ident.includes(textoLimpio) || tipo.includes(textoLimpio) || desc.includes(textoLimpio);
+            });
+
+            if (filtrados.length > 0) {
+                cajaSugerencias.style.display = 'block';
+                filtrados.forEach(eq => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    // Formato limpio sin repetir el código/patente en la tarjeta: [Tipo] Descripción
+                    div.innerText = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
+                    div.onclick = function() {
+                        const textoSeleccionadoFormato = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
+                        document.getElementById('txtBuscadorEquipo').value = eq.identificador;
+                        document.getElementById('txtEquipoSeleccionado').value = textoSeleccionadoFormato;
+                        document.getElementById('txtTipoEquipo').value = eq.tipo || '';
+                        document.getElementById('txtIdentificadorEquipo').value = eq.identificador || '';
+                        document.getElementById('txtDescEquipo').value = eq.descripcion || '';
+                        cajaSugerencias.style.display = 'none';
+                    };
+                    cajaSugerencias.appendChild(div);
+                });
+            } else {
+                cajaSugerencias.style.display = 'none';
+            }
         }
 
         function bloquearLetrasCientificas(e) {
@@ -476,31 +494,46 @@
             document.getElementById('lblStepTitle').innerText = nombresPasos[pasoActual - 1];
 
             if (pasoActual === 4) {
-                document.getElementById('resCliente').innerText = `${document.getElementById('txtRutCliente').value} (${document.getElementById('txtNombreCliente').value})`;
-                document.getElementById('resEquipo').innerText = `${document.getElementById('txtEquipoDestino').value} ${document.getElementById('txtPatente').value ? '/ ' + document.getElementById('txtPatente').value : ''}`;
+                const rut = document.getElementById('txtRutCliente').value;
+                const nombre = document.getElementById('txtNombreCliente').value;
+                const equipoSeleccionado = document.getElementById('txtEquipoSeleccionado').value;
+                const identificador = document.getElementById('txtIdentificadorEquipo').value;
+
+                document.getElementById('resCliente').innerText = `${rut} (${nombre})`;
+                document.getElementById('resEquipo').innerText = `${equipoSeleccionado} (Código/Patente: ${identificador})`;
                 document.getElementById('resLitros').innerText = `${parseFloat(document.getElementById('txtLitrosVenta').value || 0).toLocaleString('es-CL')} L`;
                 document.getElementById('resTotal').innerText = document.getElementById('lblTotalCalculado').innerText;
             }
 
             setTimeout(() => {
                 if(pasoActual === 1) document.getElementById('txtRutCliente').focus();
-                if(pasoActual === 2) document.getElementById('txtEquipoDestino').focus();
+                if(pasoActual === 2) document.getElementById('txtBuscadorEquipo').focus();
                 if(pasoActual === 3) document.getElementById('txtLitrosVenta').focus();
             }, 100);
         }
 
         function validarYPasar(paso) {
             if (paso === 1) {
-                const rut = document.getElementById('txtRutCliente').value.trim();
-                const nombre = document.getElementById('txtNombreCliente').value.trim();
-                if (!rut || !nombre) { alert('Debe ingresar el RUT y el Nombre del Cliente.'); return; }
-                if (!validarRutChileno(rut)) { alert('El RUT ingresado no es válido matemáticamente.'); return; }
+                const rutInput = document.getElementById('txtRutCliente').value.trim();
+                const nombreInput = document.getElementById('txtNombreCliente').value.trim();
+                
+                if (!rutInput || !nombreInput) { 
+                    alert('Debe ingresar y seleccionar un RUT y Nombre válidos del maestro de terceros.'); 
+                    return; 
+                }
+
+                const existeEnMaestro = baseMaestroTerceros.some(t => t.rut === rutInput);
+                if (!existeEnMaestro) {
+                    alert('⚠️ ACCESO DENEGADO: Este RUT no se encuentra registrado en el Maestro autorizado.');
+                    return;
+                }
             }
             if (paso === 2) {
-                const equipo = document.getElementById('txtEquipoDestino').value.trim();
-                if (!equipo) { alert('Debe ingresar el equipo, máquina o destino.'); return; }
-                const patente = document.getElementById('txtPatente').value.trim();
-                if (patente && patente.length !== 6) { alert('La patente debe tener exactamente 6 caracteres si se ingresa.'); return; }
+                const identificador = document.getElementById('txtIdentificadorEquipo').value.trim();
+                if (!identificador) { 
+                    alert('Debe buscar y seleccionar un equipo o vehículo válido desde el buscador superior.'); 
+                    return; 
+                }
             }
             if (paso === 3) {
                 const litros = parseFloat(document.getElementById('txtLitrosVenta').value);
@@ -515,57 +548,29 @@
 
         function validarYPasarRetroceso(pasoDestino) {
             document.getElementById('sugerenciasClientes').style.display = 'none';
+            document.getElementById('sugerenciasEquipos').style.display = 'none';
             cambiarPaso(pasoDestino);
         }
 
-        // --- ALGORITMO INTELIGENTE DE CIERRE Y BARRIDO RETROSPECTIVO (COMPARTIDO CON FLOTA) ---
         async function verificarYProcesarCierreCisterna(odometroInicialHoy, fechaHoyStr) {
-            const FECHA_INICIO_SISTEMA = "2026-11-01"; // Ancla de arranque en frío
+            const FECHA_INICIO_SISTEMA = "2026-11-01"; 
             let fechaEvaluacion = new Date(fechaHoyStr);
-
             fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
 
             while (true) {
                 let fechaStr = fechaEvaluacion.toISOString().split('T')[0];
+                if (fechaStr < FECHA_INICIO_SISTEMA) break;
 
-                if (fechaStr < FECHA_INICIO_SISTEMA) {
-                    break;
-                }
-
-                const { data: cargasDia } = await _supabase
-                    .from('cargas_flota')
-                    .select('id')
-                    .gte('fecha_hora', fechaStr + 'T00:00:00')
-                    .lte('fecha_hora', fechaStr + 'T23:59:59')
-                    .limit(1);
-
-                const { data: ventasDia } = await _supabase
-                    .from('ventas_combustible')
-                    .select('id')
-                    .gte('fecha_hora', fechaStr + 'T00:00:00')
-                    .lte('fecha_hora', fechaStr + 'T23:59:59')
-                    .limit(1);
+                const { data: cargasDia } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaStr + 'T00:00:00').lte('fecha_hora', fechaStr + 'T23:59:59').limit(1);
+                const { data: ventasDia } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaStr + 'T00:00:00').lte('fecha_hora', fechaStr + 'T23:59:59').limit(1);
 
                 let huboMovimiento = (cargasDia && cargasDia.length > 0) || (ventasDia && ventasDia.length > 0);
 
                 if (huboMovimiento) {
-                    await _supabase.from('cierre_diario_cisterna').upsert([
-                        {
-                            fecha: fechaStr,
-                            odometro_final: odometroInicialHoy
-                        }
-                    ], { onConflict: ['fecha'] });
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaStr, odometro_final: odometroInicialHoy }], { onConflict: ['fecha'] });
                     break;
                 } else {
-                    await _supabase.from('cierre_diario_cisterna').upsert([
-                        {
-                            fecha: fechaStr,
-                            odometro_inicial: odometroInicialHoy,
-                            odometro_final: odometroInicialHoy,
-                            observacion: 'Jornada Sin Movimiento / Inactiva'
-                        }
-                    ], { onConflict: ['fecha'] });
-
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaStr, odometro_inicial: odometroInicialHoy, odometro_final: odometroInicialHoy, observacion: 'Jornada Sin Movimiento / Inactiva' }], { onConflict: ['fecha'] });
                     fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
                 }
             }
@@ -581,25 +586,18 @@
             const fechaSoloHoy = fechaHoraActual.split('T')[0];
             const rutCliente = document.getElementById('txtRutCliente').value.trim();
             const nombreCliente = document.getElementById('txtNombreCliente').value.trim();
-            const equipoDestino = document.getElementById('txtEquipoDestino').value.trim();
-            const patente = document.getElementById('txtPatente').value.trim().toUpperCase() || 'N/A';
+            const tipoEquipo = document.getElementById('txtTipoEquipo').value.trim();
+            const identificadorEquipo = document.getElementById('txtIdentificadorEquipo').value.trim();
+            const descEquipo = document.getElementById('txtDescEquipo').value.trim();
+            const equipoDestinoCompleto = `[${tipoEquipo}] ${identificadorEquipo} - ${descEquipo}`;
+            
             const litros = parseFloat(document.getElementById('txtLitrosVenta').value) || 0;
             const valorUnitario = parseFloat(document.getElementById('txtValorUnitario').value) || 0;
             const totalEstimado = litros * valorUnitario;
 
             try {
-                // 1. VERIFICAR SI ES EL PRIMER MOVIMIENTO DEL DÍA (GLOBAL: CARGAS O VENTAS)
-                const { data: cargasHoy } = await _supabase
-                    .from('cargas_flota')
-                    .select('id')
-                    .gte('fecha_hora', fechaSoloHoy + 'T00:00:00')
-                    .lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
-
-                const { data: ventasHoy } = await _supabase
-                    .from('ventas_combustible')
-                    .select('id')
-                    .gte('fecha_hora', fechaSoloHoy + 'T00:00:00')
-                    .lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
+                const { data: cargasHoy } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaSoloHoy + 'T00:00:00').lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
+                const { data: ventasHoy } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaSoloHoy + 'T00:00:00').lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
 
                 let totalMovimientosHoy = (cargasHoy ? cargasHoy.length : 0) + (ventasHoy ? ventasHoy.length : 0);
 
@@ -620,26 +618,20 @@
                     }
 
                     btn.innerText = 'Registrando apertura cisterna...';
-                    await _supabase.from('cierre_diario_cisterna').upsert([
-                        {
-                            fecha: fechaSoloHoy,
-                            odometro_inicial: odometroCisterna
-                        }
-                    ], { onConflict: ['fecha'] });
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisterna }], { onConflict: ['fecha'] });
 
                     btn.innerText = 'Procesando cierres anteriores...';
                     await verificarYProcesarCierreCisterna(odometroCisterna, fechaSoloHoy);
                 }
 
-                // 2. GUARDAR LA VENTA EN SUPABASE
                 btn.innerText = 'Grabando venta...';
                 const { error } = await _supabase.from('ventas_combustible').insert([
                     {
                         fecha_hora: fechaHoraActual,
                         rut_cliente: rutCliente,
                         nombre_cliente: nombreCliente,
-                        equipo_destino: equipoDestino,
-                        patente: patente,
+                        equipo_destino: equipoDestinoCompleto,
+                        patente: identificadorEquipo,
                         litros: litros,
                         valor_unitario: valorUnitario,
                         total_estimado: totalEstimado,
