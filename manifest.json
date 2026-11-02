@@ -1,0 +1,16 @@
+{
+  "name": "Evolts Gestión Flota",
+  "short_name": "Evolts Móvil",
+  "start_url": "mobile_index.html",
+  "display": "standalone",
+  "background_color": "#070a14",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "logoevoltsPWA.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
