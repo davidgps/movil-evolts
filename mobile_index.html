@@ -178,33 +178,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 10.5px;
+            font-size: 10px;
             color: var(--text-main);
-            padding: 5px 0;
+            padding: 4px 0;
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
         .movimiento-item:last-child { border-bottom: none; }
         
-        /* Línea continua con patente y conductor lado a lado */
         .movimiento-info { 
             display: flex; 
             align-items: center; 
-            gap: 6px; 
-            flex-wrap: nowrap; 
+            gap: 5px; 
             overflow: hidden; 
             text-overflow: ellipsis; 
             white-space: nowrap; 
-            max-width: 75%;
+            max-width: 78%;
         }
 
         .mov-tipo-carga { color: var(--accent-cyan); font-weight: 700; }
         .mov-tipo-venta { color: var(--accent-amber); font-weight: 700; }
-        .mov-patente { font-weight: 700; color: #93C5FD; background: rgba(37, 99, 235, 0.15); padding: 1px 4px; border-radius: 4px; }
-        .mov-conductor { color: var(--text-muted); font-size: 10px; }
-        .mov-litros { font-weight: 800; color: #6EE7B7; font-size: 11.5px; text-align: right; }
+        .mov-patente { font-weight: 700; color: #93C5FD; background: rgba(37, 99, 235, 0.15); padding: 1px 3px; border-radius: 3px; }
+        .mov-conductor { color: var(--text-muted); font-size: 9.5px; }
+        .mov-litros { font-weight: 800; color: #6EE7B7; font-size: 11px; text-align: right; }
 
-        /* --- LOGO DPS AL 70% DE TAMAÑO, PEGADO AL HISTORIAL --- */
         .brand-inline-card {
             background: rgba(17, 24, 39, 0.95);
             border: 1px solid var(--border-color);
@@ -265,15 +262,15 @@
             </a>
         </div>
 
-        <!-- Últimos 2 Movimientos Registrados con Línea Continua -->
+        <!-- Últimos 5 Movimientos Registrados con Conductor -->
         <div class="ultimos-movimientos-card">
-            <div class="ultimos-titulo"><i class="fa-solid fa-clock-rotate-left"></i> Últimos Registros en Sistema</div>
+            <div class="ultimos-titulo"><i class="fa-solid fa-clock-rotate-left"></i> Últimos 5 Registros en Sistema</div>
             <div id="listaUltimosMovimientos">
                 <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px;">Cargando historial...</div>
             </div>
         </div>
 
-        <!-- Logo DPS Software Reducido al 70% e Integrado -->
+        <!-- Logo DPS Software Reducido al 70% -->
         <div class="brand-inline-card">
             <img src="logodps.jpg" alt="DPS Software - Integrando Soluciones">
         </div>
@@ -290,8 +287,8 @@
                     _supabase.from('compras_cisterna').select('*'),
                     _supabase.from('cargas_flota').select('litros'),
                     _supabase.from('ventas_combustible').select('litros'),
-                    _supabase.from('cargas_flota').select('fecha_hora, litros, patente, persona_carga').order('id', { ascending: false }).limit(2),
-                    _supabase.from('ventas_combustible').select('fecha_hora, litros, patente, nombre_cliente').order('id', { ascending: false }).limit(2)
+                    _supabase.from('cargas_flota').select('fecha_hora, litros, patente, persona_carga').order('id', { ascending: false }).limit(5),
+                    _supabase.from('ventas_combustible').select('fecha_hora, litros, patente, nombre_cliente').order('id', { ascending: false }).limit(5)
                 ]);
 
                 const listaCompras = compras.data || [];
@@ -322,17 +319,16 @@
                 }));
 
                 combinados.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
-                let ultimosDos = combinados.slice(0, 2);
+                let ultimosCinco = combinados.slice(0, 5);
 
                 const contenedorLista = document.getElementById('listaUltimosMovimientos');
-                if (ultimosDos.length > 0) {
+                if (ultimosCinco.length > 0) {
                     contenedorLista.innerHTML = '';
-                    ultimosDos.forEach(m => {
+                    ultimosCinco.forEach(m => {
                         let fechaCorta = m.fecha_hora ? m.fecha_hora.substring(5, 16) : '--/-- --:--';
                         let claseTipo = m.tipo === 'CARGA' ? 'mov-tipo-carga' : 'mov-tipo-venta';
                         let div = document.createElement('div');
                         div.className = 'movimiento-item';
-                        // Todo en una sola línea continua hacia el lado: [Tipo] | Fecha | Patente | Conductor
                         div.innerHTML = `
                             <div class="movimiento-info">
                                 <span class="${claseTipo}">[${m.tipo}]</span>
