@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carga a Flota - Móvil EVOLTS</title>
-    <!-- Librería oficial de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -20,232 +19,49 @@
             --accent-cyan: #0EA5E9;
             --accent-amber: #F59E0B;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 400px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .logo-box {
-            background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%);
-            border: 1px solid rgba(96, 165, 250, 0.35);
-            padding: 12px 16px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo-box img {
-            max-height: 55px;
-            height: auto;
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
-        }
-
-        .form-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .form-header h2 {
-            font-size: 14.5px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .form-container { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 16px; }
+        .logo-box { background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%); border: 1px solid rgba(96, 165, 250, 0.35); padding: 12px 16px; border-radius: 12px; text-align: center; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); }
+        .logo-box img { max-height: 55px; height: auto; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+        .form-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .form-header h2 { font-size: 14.5px; color: white; display: flex; align-items: center; gap: 8px; }
         .form-header h2 i { color: var(--accent-cyan); }
-
-        .btn-volver {
-            background: #1F2937;
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            text-decoration: none;
-        }
-
-        /* --- INDICADOR DE PROGRESO --- */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .step-content {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-
-        .step-content.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            background-color: #1F2937;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            width: 100%;
-        }
-
+        .btn-volver { background: #1F2937; color: var(--text-muted); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 8px; font-size: 11px; text-decoration: none; }
+        .step-indicator { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .step-content { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.25s ease-in-out; }
+        .step-content.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .form-control { background-color: #1F2937; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; color: white; font-size: 16px; outline: none; width: 100%; }
         .form-control:focus { border-color: var(--accent-cyan); }
-
-        /* --- INFO ODOMETRO ANTERIOR --- */
-        .odometer-hint {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 11.5px;
-            color: #FCD34D;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* --- SUGERENCIAS DE PATENTES --- */
-        .suggestions-box {
-            background: #1F2937;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            max-height: 140px;
-            overflow-y: auto;
-            display: none;
-            margin-top: -6px;
-        }
-
-        .suggestion-item {
-            padding: 10px 14px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #93C5FD;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .suggestion-item:hover {
-            background: rgba(37, 99, 235, 0.3);
-            color: white;
-        }
-
-        .step-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .btn-step {
-            flex: 1;
-            padding: 13px;
-            border-radius: 10px;
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .btn-next, .btn-submit {
-            background: linear-gradient(135deg, var(--accent-blue) 0%, #1D4ED8 100%);
-            color: white;
-        }
-
-        .btn-prev {
-            background: #374151;
-            color: var(--text-main);
-            flex: 0.4;
-        }
-
-        /* --- PIE DE FIRMA --- */
-        .footer-signature {
-            text-align: center;
-            padding-top: 10px;
-            font-size: 10.5px;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            width: 100%;
-            margin-top: 10px;
-        }
+        .odometer-hint { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 8px 12px; font-size: 11.5px; color: #FCD34D; display: flex; align-items: center; gap: 8px; }
+        .suggestions-box { background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; max-height: 140px; overflow-y: auto; display: none; margin-top: -6px; }
+        .suggestion-item { padding: 10px 14px; font-size: 14px; font-weight: 700; color: #93C5FD; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .suggestion-item:hover { background: rgba(37, 99, 235, 0.3); color: white; }
+        .step-buttons { display: flex; gap: 10px; margin-top: 6px; }
+        .btn-step { flex: 1; padding: 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-next, .btn-submit { background: linear-gradient(135deg, var(--accent-blue) 0%, #1D4ED8 100%); color: white; }
+        .btn-prev { background: #374151; color: var(--text-main); flex: 0.4; }
+        .footer-signature { text-align: center; padding-top: 10px; font-size: 10.5px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%; margin-top: 10px; }
         .footer-signature strong { color: #93C5FD; font-weight: 600; }
     </style>
 </head>
 <body>
-
     <div class="form-container">
-        <!-- Logo Corporativo -->
         <div class="logo-box">
             <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
-            <div class="logo-subtitle">Control Operativo Camión Cisterna</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Control Operativo Camión Cisterna</div>
         </div>
-
         <div class="form-header">
             <h2><i class="fa-solid fa-gas-pump"></i> Carga a Flota (Paso a Paso)</h2>
             <a href="mobile_index.html" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Menú</a>
         </div>
-
         <div class="step-indicator">
             <span id="lblStepIndicator">Paso 1 de 4</span>
             <span id="lblStepTitle" style="color: var(--accent-cyan);">Patente</span>
         </div>
-
         <form id="formCargaMóvil" onsubmit="finalizarCarga(event)">
-            
-            <!-- PASO 1: PATENTE -->
             <div class="step-content active" id="step-1">
                 <label>Buscar Patente (Empieza con...)</label>
                 <input type="text" id="txtPatente" class="form-control" placeholder="Ej: H..." maxlength="6" oninput="filtrarPatentes(this)" autocomplete="off">
@@ -254,8 +70,6 @@
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(1)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-
-            <!-- PASO 2: LITROS -->
             <div class="step-content" id="step-2">
                 <label>Litros Cargados</label>
                 <input type="number" step="0.01" min="0" id="txtLitros" class="form-control" placeholder="0.00" inputmode="decimal" onkeydown="evitarCaracteresInvalidos(event)">
@@ -264,8 +78,6 @@
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(2)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-
-            <!-- PASO 3: ODÓMETRO -->
             <div class="step-content" id="step-3">
                 <label>Odómetro Actual (Km)</label>
                 <div class="odometer-hint" id="hintOdodmetro">
@@ -278,8 +90,6 @@
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(3)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-
-            <!-- PASO 4: PERSONA QUE CARGA (CONDUCTOR) Y GUARDAR -->
             <div class="step-content" id="step-4">
                 <label>Persona que Carga (Conductor)</label>
                 <input type="text" id="txtPersonaCarga" class="form-control" placeholder="Nombre completo" autocomplete="off">
@@ -288,15 +98,11 @@
                     <button type="submit" class="btn-step btn-submit" id="btnGuardar"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
                 </div>
             </div>
-
         </form>
     </div>
-
-    <!-- Pie de Firma -->
     <footer class="footer-signature">
         EVOLTS Ltda. • Desarrollado por <strong>David G. Parraguez Suazo</strong>
     </footer>
-
     <script>
         const SUPABASE_URL = 'https://dkgxrbxmdhlosfsbzikm.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_5i71qWRXd_TesqWYrtckLA_eoOwQm5U';
@@ -323,88 +129,52 @@
                         }
                     });
                 }
-            } catch(e) {
-                console.error("Error cargando la flota:", e);
-            }
+            } catch(e) { console.error("Error cargando la flota:", e); }
         };
 
         function filtrarPatentes(input) {
             let texto = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             if (texto.length > 6) texto = texto.substring(0, 6);
             input.value = texto;
-
             const cajaSugerencias = document.getElementById('sugerenciasPatentes');
             cajaSugerencias.innerHTML = '';
-
             const listaPatentes = Object.keys(diccionarioVehiculos);
-
-            if (texto.length === 0 || listaPatentes.length === 0) {
-                cajaSugerencias.style.display = 'none';
-                return;
-            }
-
+            if (texto.length === 0 || listaPatentes.length === 0) { cajaSugerencias.style.display = 'none'; return; }
             const filtradas = listaPatentes.filter(pat => pat.startsWith(texto));
-
             if (filtradas.length > 0) {
                 cajaSugerencias.style.display = 'block';
                 filtradas.forEach(pat => {
                     const div = document.createElement('div');
                     div.className = 'suggestion-item';
                     div.innerText = pat;
-                    div.onclick = function() {
-                        input.value = pat;
-                        cajaSugerencias.style.display = 'none';
-                    };
+                    div.onclick = function() { input.value = pat; cajaSugerencias.style.display = 'none'; };
                     cajaSugerencias.appendChild(div);
                 });
-            } else {
-                cajaSugerencias.style.display = 'none';
-            }
+            } else { cajaSugerencias.style.display = 'none'; }
         }
 
         async function consultarUltimoOdometro(patente) {
             try {
-                const { data, error } = await _supabase
-                    .from('cargas_flota')
-                    .select('nuevo_odometro')
-                    .eq('patente', patente)
-                    .order('id', { ascending: false })
-                    .limit(1);
-
+                const { data, error } = await _supabase.from('cargas_flota').select('nuevo_odometro').eq('patente', patente).order('id', { ascending: false }).limit(1);
                 if (!error && data && data.length > 0) {
                     ultimoOdometroRegistrado = parseFloat(data[0].nuevo_odometro) || 0;
-                } else {
-                    ultimoOdometroRegistrado = 0; 
-                }
-
+                } else { ultimoOdometroRegistrado = 0; }
                 document.getElementById('txtUltimoOdometro').innerText = `Último registrado en sistema: ${ultimoOdometroRegistrado.toLocaleString('es-CL')} Km`;
             } catch (err) {
-                console.error("Error al buscar odómetro histórico:", err);
                 ultimoOdometroRegistrado = 0;
                 document.getElementById('txtUltimoOdometro').innerText = 'Sin registro previo o error de red';
             }
         }
 
-        function evitarPuntosYComas(e) {
-            if (['.', ',', 'e', 'E', '+', '-'].includes(e.key)) {
-                e.preventDefault();
-            }
-        }
-
-        function evitarCaracteresInvalidos(e) {
-            if (['e', 'E', '+', '-'].includes(e.key)) {
-                e.preventDefault();
-            }
-        }
+        function evitarPuntosYComas(e) { if (['.', ',', 'e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
+        function evitarCaracteresInvalidos(e) { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
 
         function cambiarPaso(nuevoPaso) {
             document.getElementById(`step-${pasoActual}`).classList.remove('active');
             pasoActual = nuevoPaso;
             document.getElementById(`step-${pasoActual}`).classList.add('active');
-
             document.getElementById('lblStepIndicator').innerText = `Paso ${pasoActual} de ${totalPasos}`;
             document.getElementById('lblStepTitle').innerText = nombresPasos[pasoActual - 1];
-
             setTimeout(() => {
                 if(pasoActual === 1) document.getElementById('txtPatente').focus();
                 if(pasoActual === 2) document.getElementById('txtLitros').focus();
@@ -416,15 +186,8 @@
         async function validarYPasar(paso) {
             if (paso === 1) {
                 const val = document.getElementById('txtPatente').value.trim().toUpperCase();
-                if (val.length === 0) {
-                    alert('Debe ingresar una patente.');
-                    return;
-                }
-                const listaPatentes = Object.keys(diccionarioVehiculos);
-                if (listaPatentes.length > 0 && !diccionarioVehiculos[val]) {
-                    alert('Esta patente no corresponde a la flota de la empresa EVOLTS.');
-                    return;
-                }
+                if (val.length === 0) { alert('Debe ingresar una patente.'); return; }
+                if (Object.keys(diccionarioVehiculos).length > 0 && !diccionarioVehiculos[val]) { alert('Esta patente no corresponde a la flota.'); return; }
                 await consultarUltimoOdometro(val);
             }
             if (paso === 2) {
@@ -434,69 +197,36 @@
             if (paso === 3) {
                 const val = parseFloat(document.getElementById('txtOdometro').value);
                 if (isNaN(val) || val < 0) { alert('Ingrese un odómetro válido en números.'); return; }
-                
                 if (val <= ultimoOdometroRegistrado) {
-                    alert(`No puede ingresar un odómetro menor o igual al último registrado en el sistema (${ultimoOdometroRegistrado.toLocaleString('es-CL')} Km). Verifique el kilometraje real del vehículo.`);
+                    alert(`No puede ingresar un odómetro menor o igual al último (${ultimoOdometroRegistrado.toLocaleString('es-CL')} Km).`);
                     return;
                 }
             }
             cambiarPaso(paso + 1);
         }
 
-        // --- ALGORITMO INTELIGENTE DE CIERRE Y BARRIDO RETROSPECTIVO ---
         async function verificarYProcesarCierreCisterna(odometroInicialHoy, fechaHoyStr) {
-            const FECHA_INICIO_SISTEMA = "2026-11-01"; // Ancla de arranque en frío
-            let fechaEvaluacion = new Date(fechaHoyStr);
-
-            // Retroceder un día para empezar a buscar hacia atrás
+            const FECHA_INICIO_SISTEMA = "2026-11-01"; 
+            let partes = fechaHoyStr.split('-');
+            let fechaEvaluacion = new Date(partes[0], partes[1] - 1, partes[2]);
             fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
 
             while (true) {
-                let fechaStr = fechaEvaluacion.toISOString().split('T')[0];
+                let anioEval = fechaEvaluacion.getFullYear();
+                let mesEval = String(fechaEvaluacion.getMonth() + 1).padStart(2, '0');
+                let diaEval = String(fechaEvaluacion.getDate()).padStart(2, '0');
+                let fechaStr = `${anioEval}-${mesEval}-${diaEval}`;
+                if (fechaStr < FECHA_INICIO_SISTEMA) break;
 
-                // Si llegamos más atrás del 1 de noviembre de 2026, frenamos
-                if (fechaStr < FECHA_INICIO_SISTEMA) {
-                    break;
-                }
-
-                // Verificar si en esta fecha pasada hubo movimientos (cargas o ventas)
-                const { data: cargasDia } = await _supabase
-                    .from('cargas_flota')
-                    .select('id')
-                    .gte('fecha_hora', fechaStr + 'T00:00:00')
-                    .lte('fecha_hora', fechaStr + 'T23:59:59')
-                    .limit(1);
-
-                const { data: ventasDia } = await _supabase
-                    .from('ventas_combustible')
-                    .select('id')
-                    .gte('fecha', fechaStr)
-                    .lte('fecha', fechaStr)
-                    .limit(1);
+                const { data: cargasDia } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaStr + ' 00:00:00').lte('fecha_hora', fechaStr + ' 23:59:59').limit(1);
+                const { data: ventasDia } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaStr + ' 00:00:00').lte('fecha_hora', fechaStr + ' 23:59:59').limit(1);
 
                 let huboMovimiento = (cargasDia && cargasDia.length > 0) || (ventasDia && ventasDia.length > 0);
-
                 if (huboMovimiento) {
-                    // Encontramos el último día con movimiento: le estampamos el odómetro final del día usando el inicial de hoy
-                    await _supabase.from('cierre_diario_cisterna').upsert([
-                        {
-                            fecha: fechaStr,
-                            odometro_final: odometroInicialHoy
-                        }
-                    ], { onConflict: ['fecha'] });
-                    break; // Terminó el barrido con éxito
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaStr, odometro_final: odometroInicialHoy }], { onConflict: ['fecha'] });
+                    break; 
                 } else {
-                    // Día sin movimiento: lo registramos como inactivo con observación
-                    await _supabase.from('cierre_diario_cisterna').upsert([
-                        {
-                            fecha: fechaStr,
-                            odometro_inicial: odometroInicialHoy,
-                            odometro_final: odometroInicialHoy,
-                            observacion: 'Jornada Sin Movimiento / Inactiva'
-                        }
-                    ], { onConflict: ['fecha'] });
-
-                    // Seguir retrocediendo al día anterior
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaStr, odometro_inicial: odometroInicialHoy, odometro_final: odometroInicialHoy, observacion: 'Jornada Sin Movimiento / Inactiva' }], { onConflict: ['fecha'] });
                     fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
                 }
             }
@@ -513,58 +243,56 @@
 
             const patente = document.getElementById('txtPatente').value.trim().toUpperCase();
             const litros = parseFloat(document.getElementById('txtLitros').value) || 0;
-            const nuevoOdometro = parseFloat(document.getElementById('txtOdometro').value) || 0;
+            let nuevoOdometro = parseFloat(document.getElementById('txtOdometro').value) || 0;
             const personaCarga = personaCargaVal;
-            const fechaHoraActual = new Date().toISOString();
-            const fechaSoloHoy = fechaHoraActual.split('T')[0]; // YYYY-MM-DD
+            
+            const ahora = new Date();
+            const anio = ahora.getFullYear();
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            const dia = String(ahora.getDate()).padStart(2, '0');
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
+
+            const fechaSoloHoy = `${anio}-${mes}-${dia}`;
+            const fechaHoraActual = `${anio}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
 
             try {
-                // 1. VERIFICAR SI ES LA PRIMERA CARGA DEL DÍA
-                const { data: cargasHoy, error: errBusqueda } = await _supabase
-                    .from('cargas_flota')
-                    .select('id')
-                    .gte('fecha_hora', fechaSoloHoy + 'T00:00:00')
-                    .lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
+                const { data: cargasHoy, error: errBusqueda } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
+                const { data: ventasHoy, error: errBusqVentas } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
+                if (errBusqueda || errBusqVentas) throw (errBusqueda || errBusqVentas);
 
-                if (errBusqueda) throw errBusqueda;
+                let totalMovsHoy = (cargasHoy ? cargasHoy.length : 0) + (ventasHoy ? ventasHoy.length : 0);
+                let odometroCisternaParaGuardar = nuevoOdometro;
 
-                if (!cargasHoy || cargasHoy.length === 0) {
-                    let inputCisterna = prompt("⚠️ Es la primera carga del día.\nIngrese el Odómetro / Horómetro Inicial de la Bomba del Cisterna:");
+                if (totalMovsHoy === 0) {
+                    let inputCisterna = prompt("⚠️ Es la primera transacción del día.\nIngrese el Odómetro / Horómetro Inicial de la Bomba del Cisterna (tal como lo ve en pantalla al finalizar):");
                     if (inputCisterna === null) {
                         btn.disabled = false;
                         btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
                         return;
                     }
 
-                    let odometroCisterna = parseFloat(inputCisterna);
-                    if (isNaN(odometroCisterna) || odometroCisterna < 0) {
-                        alert("Debe ingresar un valor numérico válido para el contador del cisterna.");
+                    let odometroLeido = parseFloat(inputCisterna);
+                    if (isNaN(odometroLeido) || odometroLeido < 0) {
+                        alert("Debe ingresar un valor numérico válido.");
                         btn.disabled = false;
                         btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
                         return;
                     }
 
-                    // Registrar el odómetro inicial de hoy en la tabla de cierre diario
-                    btn.innerText = 'Registrando apertura cisterna...';
-                    await _supabase.from('cierre_diario_cisterna').upsert([
-                        {
-                            fecha: fechaSoloHoy,
-                            odometro_inicial: odometroCisterna
-                        }
-                    ], { onConflict: ['fecha'] });
+                    // CORRECCIÓN MATEMÁTICA: Restamos los litros de esta primera transacción para aislar el odómetro real
+                    odometroCisternaParaGuardar = odometroLeido - litros;
 
-                    // Ejecutar el algoritmo de barrido retrospectivo para cerrar días anteriores sin movimiento
+                    btn.innerText = 'Registrando apertura cisterna...';
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisternaParaGuardar }], { onConflict: ['fecha'] });
+
                     btn.innerText = 'Procesando cierres anteriores...';
-                    await verificarYProcesarCierreCisterna(odometroCisterna, fechaSoloHoy);
+                    await verificarYProcesarCierreCisterna(odometroCisternaParaGuardar, fechaSoloHoy);
                 }
 
-                // 2. PROCEDER A GUARDAR LA CARGA DE FLOTA
                 btn.innerText = 'Grabando carga...';
-                const datosVehiculo = diccionarioVehiculos[patente] || {
-                    tipo: 'GENERAL',
-                    marca_modelo: 'NO ESPECIFICADO',
-                    conductor_titular: 'SIN ASIGNAR'
-                };
+                const datosVehiculo = diccionarioVehiculos[patente] || { tipo: 'GENERAL', marca_modelo: 'NO ESPECIFICADO', conductor_titular: 'SIN ASIGNAR' };
 
                 const { error: errInsert } = await _supabase.from('cargas_flota').insert([
                     {

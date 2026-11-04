@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EVOLTS Ltda. - Control Móvil Cisterna</title>
-    <!-- Librería oficial de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -21,12 +20,7 @@
             --accent-amber: #F59E0B;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body {
             background-color: var(--bg-main);
@@ -35,8 +29,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 20px 16px;
+            justify-content: flex-start;
+            padding: 16px;
         }
 
         .mobile-container {
@@ -44,78 +38,66 @@
             max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
-        /* --- LOGO CORPORATIVO --- */
         .logo-box {
             background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%);
             border: 1px solid rgba(96, 165, 250, 0.35);
-            padding: 14px 18px;
-            border-radius: 14px;
+            padding: 10px 14px;
+            border-radius: 12px;
             text-align: center;
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(37, 99, 235, 0.15);
         }
 
         .logo-box img {
-            max-height: 35px;
+            max-height: 30px;
             width: 100%;
             object-fit: contain;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
         }
 
         .logo-subtitle {
-            font-size: 10.5px;
+            font-size: 9.5px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 6px;
+            margin-top: 3px;
             font-weight: 600;
         }
 
-        /* --- TARJETA PRINCIPAL DE STOCK Y COSTO --- */
         .hero-dashboard-card {
             background: linear-gradient(145deg, #111827 0%, #0d1322 100%);
             border: 1px solid rgba(14, 165, 233, 0.3);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 14px;
+            padding: 14px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             position: relative;
             overflow: hidden;
         }
 
-        .hero-dashboard-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
-        }
-
         .hero-title {
-            font-size: 11px;
+            font-size: 10.5px;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 700;
             letter-spacing: 1px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .hero-stock-value {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 900;
             color: #6EE7B7;
             text-shadow: 0 2px 10px rgba(110, 231, 183, 0.2);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .hero-divider {
             height: 1px;
             background: var(--border-color);
-            margin: 12px 0;
+            margin: 8px 0;
             width: 100%;
         }
 
@@ -123,97 +105,129 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 6px;
+            padding: 0 4px;
         }
 
         .hero-cost-label {
-            font-size: 11.5px;
+            font-size: 10.5px;
             color: var(--text-muted);
             font-weight: 600;
             text-align: left;
         }
 
         .hero-cost-value {
-            font-size: 15px;
+            font-size: 13.5px;
             font-weight: 800;
             color: #93C5FD;
         }
 
-        /* --- BOTONES DE MENÚ PRINCIPAL --- */
         .menu-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
         }
 
         .btn-menu {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px 18px;
+            border-radius: 12px;
+            padding: 12px 14px;
             color: white;
-            font-size: 14.5px;
+            font-size: 13.5px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .btn-menu:active {
-            transform: scale(0.98);
-        }
-
-        .btn-menu i {
-            font-size: 20px;
-            width: 28px;
-            text-align: center;
-            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .btn-carga { border-left: 4px solid var(--accent-blue); }
-        .btn-carga i { color: var(--accent-blue); }
+        .btn-carga i { color: var(--accent-blue); font-size: 18px; width: 24px; text-align: center; }
 
         .btn-venta { border-left: 4px solid var(--accent-amber); }
-        .btn-venta i { color: var(--accent-amber); }
+        .btn-venta i { color: var(--accent-amber); font-size: 18px; width: 24px; text-align: center; }
 
-        .btn-text-group {
+        .btn-text-group { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+        .btn-desc { font-size: 10px; color: var(--text-muted); font-weight: normal; }
+
+        .ultimos-movimientos-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            text-align: left;
+            gap: 6px;
         }
 
-        .btn-desc {
-            font-size: 11px;
+        .ultimos-titulo {
+            font-size: 10.5px;
             color: var(--text-muted);
-            font-weight: normal;
+            text-transform: uppercase;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
         }
 
-        /* --- PIE DE FIRMA CORPORATIVO --- */
-        .footer-signature {
+        .movimiento-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10.5px;
+            color: var(--text-main);
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .movimiento-item:last-child { border-bottom: none; }
+        
+        /* Línea continua con patente y conductor lado a lado */
+        .movimiento-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            flex-wrap: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            max-width: 75%;
+        }
+
+        .mov-tipo-carga { color: var(--accent-cyan); font-weight: 700; }
+        .mov-tipo-venta { color: var(--accent-amber); font-weight: 700; }
+        .mov-patente { font-weight: 700; color: #93C5FD; background: rgba(37, 99, 235, 0.15); padding: 1px 4px; border-radius: 4px; }
+        .mov-conductor { color: var(--text-muted); font-size: 10px; }
+        .mov-litros { font-weight: 800; color: #6EE7B7; font-size: 11.5px; text-align: right; }
+
+        /* --- LOGO DPS AL 70% DE TAMAÑO, PEGADO AL HISTORIAL --- */
+        .brand-inline-card {
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 6px;
             text-align: center;
-            padding: 10px 0;
-            font-size: 11px;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            width: 100%;
-            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 70%;
+            margin: 0 auto;
         }
 
-        .footer-signature strong {
-            color: #93C5FD;
-            font-weight: 600;
+        .brand-inline-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
         }
     </style>
 </head>
 <body>
 
     <div class="mobile-container">
-        <!-- Logo Corporativo Oficial -->
+        <!-- Logo Corporativo Oficial EVOLTS -->
         <div class="logo-box">
             <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
             <div class="logo-subtitle">Control Operativo Camión Cisterna</div>
@@ -250,12 +264,20 @@
                 </div>
             </a>
         </div>
-    </div>
 
-    <!-- Pie de Firma Corporativo -->
-    <footer class="footer-signature">
-        EVOLTS Ltda. • Software desarrollado por <strong>David G. Parraguez Suazo</strong>
-    </footer>
+        <!-- Últimos 2 Movimientos Registrados con Línea Continua -->
+        <div class="ultimos-movimientos-card">
+            <div class="ultimos-titulo"><i class="fa-solid fa-clock-rotate-left"></i> Últimos Registros en Sistema</div>
+            <div id="listaUltimosMovimientos">
+                <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px;">Cargando historial...</div>
+            </div>
+        </div>
+
+        <!-- Logo DPS Software Reducido al 70% e Integrado -->
+        <div class="brand-inline-card">
+            <img src="logodps.jpg" alt="DPS Software - Integrando Soluciones">
+        </div>
+    </div>
 
     <script>
         const SUPABASE_URL = 'https://dkgxrbxmdhlosfsbzikm.supabase.co'; 
@@ -264,40 +286,73 @@
 
         window.onload = async function() {
             try {
-                const [compras, cargas, ventas] = await Promise.all([
+                const [compras, cargas, ventas, ultimasCargas, ultimasVentas] = await Promise.all([
                     _supabase.from('compras_cisterna').select('*'),
                     _supabase.from('cargas_flota').select('litros'),
-                    _supabase.from('ventas_combustible').select('litros')
+                    _supabase.from('ventas_combustible').select('litros'),
+                    _supabase.from('cargas_flota').select('fecha_hora, litros, patente, persona_carga').order('id', { ascending: false }).limit(2),
+                    _supabase.from('ventas_combustible').select('fecha_hora, litros, patente, nombre_cliente').order('id', { ascending: false }).limit(2)
                 ]);
 
                 const listaCompras = compras.data || [];
-                let totalLitrosCompras = 0;
-                let totalMontoCompras = 0;
-
+                let totalLitrosCompras = 0, totalMontoCompras = 0;
                 listaCompras.forEach(c => {
-                    const l = parseFloat(c.litros) || 0;
-                    const m = parseFloat(c.costo_total || c.total || 0);
-                    totalLitrosCompras += l;
-                    totalMontoCompras += m;
+                    totalLitrosCompras += parseFloat(c.litros) || 0;
+                    totalMontoCompras += parseFloat(c.costo_total || c.total || 0);
                 });
 
                 let totalCargas = (cargas.data || []).reduce((acc, x) => acc + (parseFloat(x.litros) || 0), 0);
                 let totalVentas = (ventas.data || []).reduce((acc, x) => acc + (parseFloat(x.litros) || 0), 0);
-
                 let stockActual = totalLitrosCompras - totalCargas - totalVentas;
                 document.getElementById('lblStockLive').innerText = stockActual.toLocaleString('es-CL') + ' L';
 
                 let costoPromedio = totalLitrosCompras > 0 ? (totalMontoCompras / totalLitrosCompras) : 0;
-                if (costoPromedio > 0) {
-                    document.getElementById('lblCostoLitro').innerText = '$ ' + Math.round(costoPromedio).toLocaleString('es-CL');
+                document.getElementById('lblCostoLitro').innerText = costoPromedio > 0 ? '$ ' + Math.round(costoPromedio).toLocaleString('es-CL') : '$ 1.200 (Est.)';
+
+                let combinados = [];
+                (ultimasCargas.data || []).forEach(c => combinados.push({ 
+                    ...c, 
+                    tipo: 'CARGA', 
+                    responsable: c.persona_carga || 'S/C' 
+                }));
+                (ultimasVentas.data || []).forEach(v => combinados.push({ 
+                    ...v, 
+                    tipo: 'VENTA', 
+                    responsable: v.nombre_cliente || 'Tercero' 
+                }));
+
+                combinados.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+                let ultimosDos = combinados.slice(0, 2);
+
+                const contenedorLista = document.getElementById('listaUltimosMovimientos');
+                if (ultimosDos.length > 0) {
+                    contenedorLista.innerHTML = '';
+                    ultimosDos.forEach(m => {
+                        let fechaCorta = m.fecha_hora ? m.fecha_hora.substring(5, 16) : '--/-- --:--';
+                        let claseTipo = m.tipo === 'CARGA' ? 'mov-tipo-carga' : 'mov-tipo-venta';
+                        let div = document.createElement('div');
+                        div.className = 'movimiento-item';
+                        // Todo en una sola línea continua hacia el lado: [Tipo] | Fecha | Patente | Conductor
+                        div.innerHTML = `
+                            <div class="movimiento-info">
+                                <span class="${claseTipo}">[${m.tipo}]</span>
+                                <span style="color: var(--text-muted);">${fechaCorta}</span>
+                                <span class="mov-patente">${m.patente || 'S/P'}</span>
+                                <span class="mov-conductor">(${m.responsable})</span>
+                            </div>
+                            <div class="mov-litros">${parseFloat(m.litros || 0).toLocaleString('es-CL')} L</div>
+                        `;
+                        contenedorLista.appendChild(div);
+                    });
                 } else {
-                    document.getElementById('lblCostoLitro').innerText = '$ 1.200 (Est.)';
+                    contenedorLista.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px;">Sin movimientos recientes</div>';
                 }
 
             } catch (err) {
                 console.error("Error al obtener datos en vivo:", err);
                 document.getElementById('lblStockLive').innerText = 'Sin conexión';
                 document.getElementById('lblCostoLitro').innerText = '---';
+                document.getElementById('listaUltimosMovimientos').innerHTML = '<div style="font-size: 11px; color: var(--accent-red); text-align: center;">Error de carga</div>';
             }
         };
     </script>

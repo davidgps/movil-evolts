@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venta a Terceros - Móvil EVOLTS</title>
-    <!-- Librería oficial de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -21,287 +20,86 @@
             --accent-amber: #F59E0B;
             --accent-red: #EF4444;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 400px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .logo-box {
-            background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%);
-            border: 1px solid rgba(96, 165, 250, 0.35);
-            padding: 12px 16px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo-box img {
-            max-height: 55px;
-            height: auto;
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
-        }
-
-        .logo-subtitle {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .form-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .form-header h2 {
-            font-size: 14px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .form-container { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 16px; }
+        .logo-box { background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%); border: 1px solid rgba(96, 165, 250, 0.35); padding: 12px 16px; border-radius: 12px; text-align: center; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); }
+        .logo-box img { max-height: 55px; height: auto; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+        .form-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .form-header h2 { font-size: 14px; color: white; display: flex; align-items: center; gap: 8px; }
         .form-header h2 i { color: var(--accent-amber); }
-
-        .btn-volver {
-            background: #1F2937;
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            text-decoration: none;
-        }
-
-        /* --- INDICADOR DE PROGRESO --- */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .step-content {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-
-        .step-content.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            background-color: #1F2937;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            width: 100%;
-        }
-
+        .btn-volver { background: #1F2937; color: var(--text-muted); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 8px; font-size: 11px; text-decoration: none; }
+        .step-indicator { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .step-content { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.25s ease-in-out; }
+        .step-content.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .form-control { background-color: #1F2937; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; color: white; font-size: 16px; outline: none; width: 100%; }
         .form-control:focus { border-color: var(--accent-amber); }
-        
-        .form-control[readonly] {
-            background-color: #111827;
-            color: #93C5FD;
-            border-color: rgba(147, 197, 253, 0.3);
-            cursor: not-allowed;
-            font-weight: 600;
-        }
-
-        /* --- SUGERENCIAS INTELIGENTES (AUTOCOMPLETE) --- */
-        .suggestions-box {
-            background: #1F2937;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            max-height: 140px;
-            overflow-y: auto;
-            display: none;
-            margin-top: -6px;
-        }
-
-        .suggestion-item {
-            padding: 10px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #93C5FD;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .suggestion-item:hover {
-            background: rgba(37, 99, 235, 0.3);
-            color: white;
-        }
-
-        .step-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
-        .btn-step {
-            flex: 1;
-            padding: 13px;
-            border-radius: 10px;
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .btn-next, .btn-submit {
-            background: linear-gradient(135deg, var(--accent-amber) 0%, #D97706 100%);
-            color: white;
-        }
-
-        .btn-prev {
-            background: #374151;
-            color: var(--text-main);
-            flex: 0.4;
-        }
-
-        /* --- PIE DE FIRMA --- */
-        .footer-signature {
-            text-align: center;
-            padding-top: 10px;
-            font-size: 10.5px;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            width: 100%;
-            margin-top: 10px;
-        }
+        .form-control[readonly] { background-color: #111827; color: #93C5FD; border-color: rgba(147, 197, 253, 0.3); cursor: not-allowed; font-weight: 600; }
+        .suggestions-box { background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; max-height: 140px; overflow-y: auto; display: none; margin-top: -6px; }
+        .suggestion-item { padding: 10px 14px; font-size: 13px; font-weight: 600; color: #93C5FD; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .suggestion-item:hover { background: rgba(37, 99, 235, 0.3); color: white; }
+        .step-buttons { display: flex; gap: 10px; margin-top: 6px; }
+        .btn-step { flex: 1; padding: 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-next, .btn-submit { background: linear-gradient(135deg, var(--accent-amber) 0%, #D97706 100%); color: white; }
+        .btn-prev { background: #374151; color: var(--text-main); flex: 0.4; }
+        .footer-signature { text-align: center; padding-top: 10px; font-size: 10.5px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%; margin-top: 10px; }
         .footer-signature strong { color: #93C5FD; font-weight: 600; }
     </style>
 </head>
 <body>
-
     <div class="form-container">
-        <!-- Logo Corporativo Corregido -->
         <div class="logo-box">
             <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
-            <div class="logo-subtitle">Control Operativo Camión Cisterna</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Control Operativo Camión Cisterna</div>
         </div>
-
         <div class="form-header">
             <h2><i class="fa-solid fa-file-invoice-dollar"></i> Venta a Terceros (Paso a Paso)</h2>
             <a href="mobile_index.html" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Menú</a>
         </div>
-
         <div class="step-indicator">
             <span id="lblStepIndicator">Paso 1 de 4</span>
             <span id="lblStepTitle" style="color: var(--accent-amber);">Cliente (RUT)</span>
         </div>
-
         <form id="formVentaMóvil" onsubmit="finalizarVenta(event)">
-            
-            <!-- PASO 1: RUT Y CLIENTE -->
             <div class="step-content active" id="step-1">
                 <label>RUT del Cliente / Empresa</label>
                 <input type="text" id="txtRutCliente" class="form-control" placeholder="Ej: 7177056-7" oninput="formatearYBuscarRut(this)" autocomplete="off">
                 <div id="sugerenciasClientes" class="suggestions-box"></div>
-                
                 <label style="margin-top: 6px;">Nombre del Cliente / Tercero</label>
                 <input type="text" id="txtNombreCliente" class="form-control" placeholder="Ej: CGE / Fundo Las Araucarias" oninput="buscarPorNombre(this.value)" autocomplete="off">
-                
                 <div class="step-buttons" style="margin-top: 10px;">
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(1)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-
-            <!-- PASO 2: EQUIPO O PATENTE ASOCIADA -->
             <div class="step-content" id="step-2">
                 <label>Buscar Equipo o Patente del Cliente</label>
                 <input type="text" id="txtBuscadorEquipo" class="form-control" placeholder="Escriba para filtrar (Ej: GEN o JZ)" oninput="filtrarEquiposCliente(this.value)" autocomplete="off">
                 <div id="sugerenciasEquipos" class="suggestions-box"></div>
-
                 <label style="margin-top: 8px;">Equipo / Vehículo Seleccionado</label>
                 <input type="text" id="txtEquipoSeleccionado" class="form-control" placeholder="Seleccione arriba de la lista..." readonly autocomplete="off">
-                
-                <!-- Campos ocultos técnicos para guardar los valores limpios al registrar la venta -->
                 <input type="hidden" id="txtTipoEquipo">
                 <input type="hidden" id="txtIdentificadorEquipo">
                 <input type="hidden" id="txtDescEquipo">
-
                 <div class="step-buttons" style="margin-top: 16px;">
                     <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(1)"><i class="fa-solid fa-arrow-left"></i></button>
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(2)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-
-            <!-- PASO 3: LITROS Y VALOR -->
             <div class="step-content" id="step-3">
                 <label>Litros Vendidos / Despachados</label>
                 <input type="number" step="any" min="0" id="txtLitrosVenta" class="form-control" placeholder="0.00" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this); calcularTotal();">
-                
                 <label style="margin-top: 6px;">Valor Unitario ($ / L)</label>
                 <input type="number" step="any" min="0" id="txtValorUnitario" class="form-control" value="1200" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this); calcularTotal();">
-                
                 <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px; font-size: 12px; color: #FCD34D;">
                     <strong>Total Estimado:</strong> <span id="lblTotalCalculado" style="font-size: 15px; font-weight: bold; color: white;">$ 0</span>
                 </div>
-
                 <div class="step-buttons">
                     <button type="button" class="btn-step btn-prev" onclick="validarYPasarRetroceso(2)"><i class="fa-solid fa-arrow-left"></i></button>
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(3)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
-
-            <!-- PASO 4: CONFIRMAR Y GUARDAR -->
             <div class="step-content" id="step-4">
                 <div style="background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px;">
                     <div><span style="color: var(--text-muted);">Cliente:</span> <strong id="resCliente" style="color: white;">-</strong></div>
@@ -314,15 +112,11 @@
                     <button type="submit" class="btn-step btn-submit" id="btnGuardar"><i class="fa-solid fa-floppy-disk"></i> Registrar Venta</button>
                 </div>
             </div>
-
         </form>
     </div>
-
-    <!-- Pie de Firma -->
     <footer class="footer-signature">
         EVOLTS Ltda. • Desarrollado por <strong>David G. Parraguez Suazo</strong>
     </footer>
-
     <script>
         const SUPABASE_URL = 'https://dkgxrbxmdhlosfsbzikm.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_5i71qWRXd_TesqWYrtckLA_eoOwQm5U';
@@ -335,15 +129,12 @@
         let baseEquiposTerceros = [];
         let stockActualCisterna = 0;
 
-        window.onload = async function() {
-            await cargarDatosIniciales();
-        };
+        window.onload = async function() { await cargarDatosIniciales(); };
 
         async function cargarDatosIniciales() {
             try {
                 const { data: tercerosData } = await _supabase.from('maestro_terceros').select('*');
                 if (tercerosData) baseMaestroTerceros = tercerosData;
-
                 const { data: equiposData } = await _supabase.from('maestro_equipos_terceros').select('*');
                 if (equiposData) baseEquiposTerceros = equiposData;
 
@@ -360,21 +151,13 @@
                 if (resVentas.data) resVentas.data.forEach(v => totalVentas += parseFloat(v.litros) || 0);
 
                 stockActualCisterna = totalComprado - (totalDespachadoFlota + totalVentas);
-            } catch (e) {
-                console.error("Error al inicializar datos:", e);
-            }
+            } catch (e) { console.error("Error al inicializar datos:", e); }
         }
 
         function formatearYBuscarRut(input) {
             let valor = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
             if (valor.length > 9) valor = valor.substring(0, 9);
-            
-            if (valor.length === 0) {
-                input.value = '';
-                document.getElementById('sugerenciasClientes').style.display = 'none';
-                return;
-            }
-
+            if (valor.length === 0) { input.value = ''; document.getElementById('sugerenciasClientes').style.display = 'none'; return; }
             let cuerpo = valor.slice(0, -1);
             let dv = valor.slice(-1);
             input.value = cuerpo.length > 0 ? cuerpo + '-' + dv : dv;
@@ -382,12 +165,7 @@
             const queryLimpia = valor.toLowerCase();
             const cajaSugerencias = document.getElementById('sugerenciasClientes');
             cajaSugerencias.innerHTML = '';
-
-            const filtrados = baseMaestroTerceros.filter(t => {
-                const rutLimpioDb = (t.rut || '').replace(/[^0-9kK]/g, '').toLowerCase();
-                return rutLimpioDb.includes(queryLimpia);
-            });
-
+            const filtrados = baseMaestroTerceros.filter(t => (t.rut || '').replace(/[^0-9kK]/g, '').toLowerCase().includes(queryLimpia));
             if (filtrados.length > 0) {
                 cajaSugerencias.style.display = 'block';
                 filtrados.forEach(tercero => {
@@ -401,23 +179,15 @@
                     };
                     cajaSugerencias.appendChild(div);
                 });
-            } else {
-                cajaSugerencias.style.display = 'none';
-            }
+            } else { cajaSugerencias.style.display = 'none'; }
         }
 
         function buscarPorNombre(textoBusqueda) {
             const textoLimpio = textoBusqueda.trim().toLowerCase();
             const cajaSugerencias = document.getElementById('sugerenciasClientes');
             cajaSugerencias.innerHTML = '';
-
-            if (!textoLimpio || textoLimpio.length < 1) {
-                cajaSugerencias.style.display = 'none';
-                return;
-            }
-
+            if (!textoLimpio) { cajaSugerencias.style.display = 'none'; return; }
             const filtrados = baseMaestroTerceros.filter(t => (t.nombre || '').toLowerCase().includes(textoLimpio));
-
             if (filtrados.length > 0) {
                 cajaSugerencias.style.display = 'block';
                 filtrados.forEach(tercero => {
@@ -431,31 +201,18 @@
                     };
                     cajaSugerencias.appendChild(div);
                 });
-            } else {
-                cajaSugerencias.style.display = 'none';
-            }
+            } else { cajaSugerencias.style.display = 'none'; }
         }
 
-        // BÚSQUEDA INTELIGENTE PREDICTIVA PARA EQUIPOS (SIN REPETIR CÓDIGO)
         function filtrarEquiposCliente(textoBusqueda) {
             const rutSeleccionado = document.getElementById('txtRutCliente').value.trim();
             const cajaSugerencias = document.getElementById('sugerenciasEquipos');
             cajaSugerencias.innerHTML = '';
-
             const textoLimpio = textoBusqueda.trim().toLowerCase();
-            if (!textoLimpio || textoLimpio.length < 1) {
-                cajaSugerencias.style.display = 'none';
-                return;
-            }
+            if (!textoLimpio) { cajaSugerencias.style.display = 'none'; return; }
 
             const equiposDelCliente = baseEquiposTerceros.filter(e => (e.rut_cliente || '').trim() === rutSeleccionado);
-
-            const filtrados = equiposDelCliente.filter(eq => {
-                const ident = (eq.identificador || '').toLowerCase();
-                const tipo = (eq.tipo || '').toLowerCase();
-                const desc = (eq.descripcion || '').toLowerCase();
-                return ident.includes(textoLimpio) || tipo.includes(textoLimpio) || desc.includes(textoLimpio);
-            });
+            const filtrados = equiposDelCliente.filter(eq => (eq.identificador || '').toLowerCase().includes(textoLimpio) || (eq.tipo || '').toLowerCase().includes(textoLimpio) || (eq.descripcion || '').toLowerCase().includes(textoLimpio));
 
             if (filtrados.length > 0) {
                 cajaSugerencias.style.display = 'block';
@@ -464,9 +221,8 @@
                     div.className = 'suggestion-item';
                     div.innerText = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
                     div.onclick = function() {
-                        const textoSeleccionadoFormato = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
                         document.getElementById('txtBuscadorEquipo').value = eq.identificador;
-                        document.getElementById('txtEquipoSeleccionado').value = textoSeleccionadoFormato;
+                        document.getElementById('txtEquipoSeleccionado').value = `[${eq.tipo}] ${eq.descripcion || 'Sin descripción'}`;
                         document.getElementById('txtTipoEquipo').value = eq.tipo || '';
                         document.getElementById('txtIdentificadorEquipo').value = eq.identificador || '';
                         document.getElementById('txtDescEquipo').value = eq.descripcion || '';
@@ -474,46 +230,30 @@
                     };
                     cajaSugerencias.appendChild(div);
                 });
-            } else {
-                cajaSugerencias.style.display = 'none';
-            }
+            } else { cajaSugerencias.style.display = 'none'; }
         }
 
-        function bloquearLetrasCientificas(e) {
-            if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
-        }
-
-        function limpiarNumeroEstricto(input) {
-            input.value = input.value.replace(/[eE\+\-]/g, '');
-        }
-
+        function bloquearLetrasCientificas(e) { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
+        function limpiarNumeroEstricto(input) { input.value = input.value.replace(/[eE\+\-]/g, ''); }
         function calcularTotal() {
             const litros = parseFloat(document.getElementById('txtLitrosVenta').value) || 0;
             const unitario = parseFloat(document.getElementById('txtValorUnitario').value) || 0;
-            const total = litros * unitario;
-            document.getElementById('lblTotalCalculado').innerText = "$ " + Math.round(total).toLocaleString('es-CL');
+            document.getElementById('lblTotalCalculado').innerText = "$ " + Math.round(litros * unitario).toLocaleString('es-CL');
         }
 
         function cambiarPaso(nuevoPaso) {
             document.getElementById(`step-${pasoActual}`).classList.remove('active');
             pasoActual = nuevoPaso;
             document.getElementById(`step-${pasoActual}`).classList.add('active');
-
             document.getElementById('lblStepIndicator').innerText = `Paso ${pasoActual} de ${totalPasos}`;
             document.getElementById('lblStepTitle').innerText = nombresPasos[pasoActual - 1];
 
             if (pasoActual === 4) {
-                const rut = document.getElementById('txtRutCliente').value;
-                const nombre = document.getElementById('txtNombreCliente').value;
-                const equipoSeleccionado = document.getElementById('txtEquipoSeleccionado').value;
-                const identificador = document.getElementById('txtIdentificadorEquipo').value;
-
-                document.getElementById('resCliente').innerText = `${rut} (${nombre})`;
-                document.getElementById('resEquipo').innerText = `${equipoSeleccionado} (Código/Patente: ${identificador})`;
+                document.getElementById('resCliente').innerText = `${document.getElementById('txtRutCliente').value} (${document.getElementById('txtNombreCliente').value})`;
+                document.getElementById('resEquipo').innerText = `${document.getElementById('txtEquipoSeleccionado').value} (Código: ${document.getElementById('txtIdentificadorEquipo').value})`;
                 document.getElementById('resLitros').innerText = `${parseFloat(document.getElementById('txtLitrosVenta').value || 0).toLocaleString('es-CL')} L`;
                 document.getElementById('resTotal').innerText = document.getElementById('lblTotalCalculado').innerText;
             }
-
             setTimeout(() => {
                 if(pasoActual === 1) document.getElementById('txtRutCliente').focus();
                 if(pasoActual === 2) document.getElementById('txtBuscadorEquipo').focus();
@@ -523,34 +263,15 @@
 
         function validarYPasar(paso) {
             if (paso === 1) {
-                const rutInput = document.getElementById('txtRutCliente').value.trim();
-                const nombreInput = document.getElementById('txtNombreCliente').value.trim();
-                
-                if (!rutInput || !nombreInput) { 
-                    alert('Debe ingresar y seleccionar un RUT y Nombre válidos del maestro de terceros.'); 
-                    return; 
-                }
-
-                const existeEnMaestro = baseMaestroTerceros.some(t => t.rut === rutInput);
-                if (!existeEnMaestro) {
-                    alert('⚠️ ACCESO DENEGADO: Este RUT no se encuentra registrado en el Maestro autorizado.');
-                    return;
-                }
+                if (!document.getElementById('txtRutCliente').value.trim() || !document.getElementById('txtNombreCliente').value.trim()) { alert('Debe ingresar un RUT y Nombre.'); return; }
             }
             if (paso === 2) {
-                const identificador = document.getElementById('txtIdentificadorEquipo').value.trim();
-                if (!identificador) { 
-                    alert('Debe buscar y seleccionar un equipo o vehículo válido desde el buscador superior.'); 
-                    return; 
-                }
+                if (!document.getElementById('txtIdentificadorEquipo').value.trim()) { alert('Debe seleccionar un equipo válido.'); return; }
             }
             if (paso === 3) {
                 const litros = parseFloat(document.getElementById('txtLitrosVenta').value);
                 if (isNaN(litros) || litros <= 0) { alert('Ingrese una cantidad válida de litros.'); return; }
-                if (litros > stockActualCisterna) {
-                    alert(`¡Stock insuficiente! El camión cisterna cuenta con ${stockActualCisterna.toLocaleString('es-CL')} L disponibles.`);
-                    return;
-                }
+                if (litros > stockActualCisterna) { alert(`¡Stock insuficiente! Disponibles: ${stockActualCisterna.toLocaleString('es-CL')} L.`); return; }
             }
             cambiarPaso(paso + 1);
         }
@@ -563,18 +284,21 @@
 
         async function verificarYProcesarCierreCisterna(odometroInicialHoy, fechaHoyStr) {
             const FECHA_INICIO_SISTEMA = "2026-11-01"; 
-            let fechaEvaluacion = new Date(fechaHoyStr);
+            let partes = fechaHoyStr.split('-');
+            let fechaEvaluacion = new Date(partes[0], partes[1] - 1, partes[2]);
             fechaEvaluacion.setDate(fechaEvaluacion.getDate() - 1);
 
             while (true) {
-                let fechaStr = fechaEvaluacion.toISOString().split('T')[0];
+                let anioEval = fechaEvaluacion.getFullYear();
+                let mesEval = String(fechaEvaluacion.getMonth() + 1).padStart(2, '0');
+                let diaEval = String(fechaEvaluacion.getDate()).padStart(2, '0');
+                let fechaStr = `${anioEval}-${mesEval}-${diaEval}`;
                 if (fechaStr < FECHA_INICIO_SISTEMA) break;
 
-                const { data: cargasDia } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaStr + 'T00:00:00').lte('fecha_hora', fechaStr + 'T23:59:59').limit(1);
-                const { data: ventasDia } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaStr + 'T00:00:00').lte('fecha_hora', fechaStr + 'T23:59:59').limit(1);
+                const { data: cargasDia } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaStr + ' 00:00:00').lte('fecha_hora', fechaStr + ' 23:59:59').limit(1);
+                const { data: ventasDia } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaStr + ' 00:00:00').lte('fecha_hora', fechaStr + ' 23:59:59').limit(1);
 
                 let huboMovimiento = (cargasDia && cargasDia.length > 0) || (ventasDia && ventasDia.length > 0);
-
                 if (huboMovimiento) {
                     await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaStr, odometro_final: odometroInicialHoy }], { onConflict: ['fecha'] });
                     break;
@@ -591,8 +315,17 @@
             btn.disabled = true;
             btn.innerText = 'Verificando jornada...';
 
-            const fechaHoraActual = new Date().toISOString();
-            const fechaSoloHoy = fechaHoraActual.split('T')[0];
+            const ahora = new Date();
+            const anio = ahora.getFullYear();
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            const dia = String(ahora.getDate()).padStart(2, '0');
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
+
+            const fechaSoloHoy = `${anio}-${mes}-${dia}`;
+            const fechaHoraActual = `${anio}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+
             const rutCliente = document.getElementById('txtRutCliente').value.trim();
             const nombreCliente = document.getElementById('txtNombreCliente').value.trim();
             const tipoEquipo = document.getElementById('txtTipoEquipo').value.trim();
@@ -605,32 +338,35 @@
             const totalEstimado = litros * valorUnitario;
 
             try {
-                const { data: cargasHoy } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaSoloHoy + 'T00:00:00').lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
-                const { data: ventasHoy } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaSoloHoy + 'T00:00:00').lte('fecha_hora', fechaSoloHoy + 'T23:59:59');
+                const { data: cargasHoy } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
+                const { data: ventasHoy } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
 
                 let totalMovimientosHoy = (cargasHoy ? cargasHoy.length : 0) + (ventasHoy ? ventasHoy.length : 0);
 
                 if (totalMovimientosHoy === 0) {
-                    let inputCisterna = prompt("⚠️ Es la primera transacción del día.\nIngrese el Odómetro / Horómetro Inicial de la Bomba del Cisterna:");
+                    let inputCisterna = prompt("⚠️ Es la primera transacción del día.\nIngrese el Odómetro / Horómetro Inicial de la Bomba del Cisterna (tal como lo ve en pantalla al finalizar):");
                     if (inputCisterna === null) {
                         btn.disabled = false;
                         btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Venta';
                         return;
                     }
 
-                    let odometroCisterna = parseFloat(inputCisterna);
-                    if (isNaN(odometroCisterna) || odometroCisterna < 0) {
-                        alert("Debe ingresar un valor numérico válido para el contador del cisterna.");
+                    let odometroLeido = parseFloat(inputCisterna);
+                    if (isNaN(odometroLeido) || odometroLeido < 0) {
+                        alert("Debe ingresar un valor numérico válido.");
                         btn.disabled = false;
                         btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Venta';
                         return;
                     }
 
+                    // CORRECCIÓN MATEMÁTICA EN VENTAS: Restamos los litros de esta primera venta para calibrar el inicio
+                    let odometroCisternaParaGuardar = odometroLeido - litros;
+
                     btn.innerText = 'Registrando apertura cisterna...';
-                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisterna }], { onConflict: ['fecha'] });
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisternaParaGuardar }], { onConflict: ['fecha'] });
 
                     btn.innerText = 'Procesando cierres anteriores...';
-                    await verificarYProcesarCierreCisterna(odometroCisterna, fechaSoloHoy);
+                    await verificarYProcesarCierreCisterna(odometroCisternaParaGuardar, fechaSoloHoy);
                 }
 
                 btn.innerText = 'Grabando venta...';
