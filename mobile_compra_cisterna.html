@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111827">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra de Combustible - Móvil EVOLTS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #070a14;
+            --bg-card: #111827;
+            --border-color: #1e293b;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --accent-blue: #2563EB;
+            --accent-cyan: #0EA5E9;
+            --accent-emerald: #10B981;
+            --accent-amber: #F59E0B;
+            --accent-red: #EF4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .form-container { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 12px; }
+        .logo-box { background: radial-gradient(circle at center, rgba(16, 185, 129, 0.2) 0%, rgba(11, 17, 32, 0.9) 100%); border: 1px solid rgba(16, 185, 129, 0.35); padding: 10px 14px; border-radius: 12px; text-align: center; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); }
+        .logo-box img { max-height: 45px; height: auto; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+        .form-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .form-header h2 { font-size: 13.5px; color: white; display: flex; align-items: center; gap: 6px; }
+        .form-header h2 i { color: var(--accent-emerald); }
+        .btn-volver { background: #1F2937; color: var(--text-muted); border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 8px; font-size: 11px; text-decoration: none; }
+        .step-indicator { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .step-content { display: none; flex-direction: column; gap: 10px; animation: fadeIn 0.25s ease-in-out; }
+        .step-content.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        label { font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .form-control { background-color: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; color: white; font-size: 15px; outline: none; width: 100%; }
+        .form-control:focus { border-color: var(--accent-emerald); }
+        .odometer-hint { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 8px; font-size: 11.5px; color: #34D399; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .suggestions-box { background: #1F2937; border: 1px solid var(--border-color); border-radius: 8px; max-height: 110px; overflow-y: auto; display: none; margin-top: -4px; }
+        .suggestion-item { padding: 8px 12px; font-size: 12.5px; font-weight: 600; color: #34D399; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .suggestion-item:hover { background: rgba(16, 185, 129, 0.3); color: white; }
+        .step-buttons { display: flex; gap: 8px; margin-top: 4px; }
+        .btn-step { flex: 1; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-next, .btn-submit { background: linear-gradient(135deg, var(--accent-emerald) 0%, #059669 100%); color: white; }
+        .btn-prev { background: #374151; color: var(--text-main); flex: 0.4; }
+        .footer-signature { text-align: center; padding-top: 6px; font-size: 10px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%; margin-top: 6px; }
+        .footer-signature strong { color: #93C5FD; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="logo-box">
+            <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
+            <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase;">Control Operativo Camión Cisterna</div>
+        </div>
+        <div class="form-header">
+            <h2><i class="fa-solid fa-truck-ramp-box"></i> Registrar Compra de Combustible</h2>
+            <a href="mobile_index.html" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Menú</a>
+        </div>
+        <div class="step-indicator">
+            <span id="lblStepIndicator">Paso 1 de 4</span>
+            <span id="lblStepTitle" style="color: var(--accent-emerald);">Factura y Proveedor</span>
+        </div>
+        <form id="formCompraMóvil" onsubmit="finalizarCompra(event)">
+            
+            <!-- PASO 1: FACTURA Y PROVEEDOR -->
+            <div class="step-content active" id="step-1">
+                <label>N° de Factura o Guía (Solo Número)</label>
+                <input type="number" id="txtFactura" class="form-control" placeholder="Ej: 151454" inputmode="numeric" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this)" autocomplete="off" style="margin-bottom: 6px;">
+                
+                <label>RUT del Proveedor</label>
+                <input type="text" id="txtRutProveedor" class="form-control" placeholder="Ej: 7.772.857-0" oninput="formatearYBuscarProveedor(this)" autocomplete="off" style="margin-bottom: 6px;">
+                <div id="sugerenciasProveedores" class="suggestions-box"></div>
+
+                <label>Proveedor / Razón Social</label>
+                <input type="text" id="txtProveedor" class="form-control" placeholder="Nombre del proveedor..." autocomplete="off">
+
+                <div class="step-buttons" style="margin-top: 8px;">
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(1)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 2: LITROS Y COSTO TOTAL -->
+            <div class="step-content" id="step-2">
+                <div class="odometer-hint" id="lblStockInfo">
+                    <i class="fa-solid fa-water"></i> <span id="txtEstadoStock">Calculando espacio en estanque...</span>
+                </div>
+
+                <label>Litros Comprados / Recibidos</label>
+                <input type="number" step="any" min="0" id="txtLitrosCompra" class="form-control" placeholder="Ej: 100" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this); calcularUnitarioPrevio();" style="margin-bottom: 6px;">
+                
+                <label>Costo Total ($)</label>
+                <input type="number" step="any" min="0" id="txtCostoTotal" class="form-control" placeholder="Ej: 150000" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this); calcularUnitarioPrevio();">
+                
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 8px; font-size: 11.5px; color: #34D399; margin-top: 4px;">
+                    <strong>Costo Unitario Calculado:</strong> <span id="lblUnitarioCalculado" style="font-size: 13.5px; font-weight: bold; color: white;">$ 0 / L</span>
+                </div>
+
+                <div class="step-buttons" style="margin-top: 8px;">
+                    <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(1)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(2)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 3: ODÓMETRO FINAL DE BOMBA (RECEPCIÓN - COMPRA) -->
+            <div class="step-content" id="step-3">
+                <label>Odómetro / Horómetro Final de Bomba</label>
+                <div class="odometer-hint">
+                    <i class="fa-solid fa-gauge"></i> <span id="lblOdometroBaseCisterna">Cargando base anterior...</span>
+                </div>
+                <input type="number" step="any" min="0" id="txtOdometroFinalBomba" class="form-control" placeholder="Ej: 147445" inputmode="numeric" onkeydown="bloquearLetrasCientificas(event)" oninput="limpiarNumeroEstricto(this);">
+                
+                <div class="step-buttons" style="margin-top: 12px;">
+                    <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(2)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(3)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 4: CONFIRMACIÓN -->
+            <div class="step-content" id="step-4">
+                <div style="background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; font-size: 11.5px; display: flex; flex-direction: column; gap: 5px;">
+                    <div><span style="color: var(--text-muted);">N° Factura / Guía:</span> <strong id="resFactura" style="color: white;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Proveedor:</span> <strong id="resProveedor" style="color: white;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Litros Ingresados:</span> <strong id="resLitros" style="color: #34D399;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Costo Total:</span> <strong id="resCostoTotal" style="color: #6EE7B7;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Odómetro Bomba Final:</span> <strong id="resOdometroBomba" style="color: #38BDF8;">-</strong></div>
+                </div>
+                <div class="step-buttons">
+                    <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(3)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="submit" class="btn-step btn-submit" id="btnGuardar"><i class="fa-solid fa-floppy-disk"></i> Registrar Compra</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <footer class="footer-signature">
+        EVOLTS Ltda. • Desarrollado por <strong>David G. Parraguez Suazo</strong>
+    </footer>
+    <script>
+        const SUPABASE_URL = 'https://dkgxrbxmdhlosfsbzikm.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_5i71qWRXd_TesqWYrtckLA_eoOwQm5U';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let pasoActual = 1;
+        const totalPasos = 4;
+        const nombresPasos = ["Factura y Proveedor", "Litros y Costo", "Odómetro Bomba", "Confirmar"];
+        let odometroBaseCisterna = 0;
+        let listaProveedoresCache = [];
+        let stockActualEstimado = 0;
+        const CAPACIDAD_MAXIMA_ESTANQUE = 5200;
+
+        window.onload = async function() {
+            try {
+                const { data: provData } = await _supabase.from('compras_cisterna').select('rut_proveedor, proveedor');
+                if (provData) {
+                    let unicos = {};
+                    provData.forEach(p => { if (p.rut_proveedor) unicos[p.rut_proveedor] = p.proveedor; });
+                    listaProveedoresCache = Object.keys(unicos).map(rut => ({ rut: rut, nombre: unicos[rut] }));
+                }
+
+                const ahora = new Date();
+                const fechaHoyStr = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+                const { data: cierreHoy } = await _supabase.from('cierre_diario_cisterna').select('odometro_inicial, odometro_final').eq('fecha', fechaHoyStr).maybeSingle();
+                
+                if (cierreHoy) {
+                    odometroBaseCisterna = parseFloat(cierreHoy.odometro_final || cierreHoy.odometro_inicial) || 0;
+                }
+                document.getElementById('lblOdometroBaseCisterna').innerText = `Odómetro Base Anterior: ${odometroBaseCisterna.toLocaleString('es-CL')}`;
+
+                await calcularStockActualEstanque();
+
+            } catch(e) { console.error("Error inicializando compra cisterna:", e); }
+        };
+
+        async function calcularStockActualEstanque() {
+            try {
+                const { data: compras } = await _supabase.from('compras_cisterna').select('litros');
+                const { data: cargas } = await _supabase.from('cargas_flota').select('litros');
+                const { data: ventas } = await _supabase.from('ventas_combustible').select('litros');
+
+                let totalCompras = (compras || []).reduce((acc, c) => acc + (parseFloat(c.litros) || 0), 0);
+                let totalCargas = (cargas || []).reduce((acc, c) => acc + (parseFloat(c.litros) || 0), 0);
+                let totalVentas = (ventas || []).reduce((acc, v) => acc + (parseFloat(v.litros) || 0), 0);
+
+                stockActualEstimado = totalCompras - (totalCargas + totalVentas);
+                
+                if (stockActualEstimado < 0 || isNaN(stockActualEstimado)) {
+                    stockActualEstimado = 0;
+                }
+
+                let espacioDisponible = CAPACIDAD_MAXIMA_ESTANQUE - stockActualEstimado;
+                if (espacioDisponible < 0) espacioDisponible = 0;
+                if (espacioDisponible > CAPACIDAD_MAXIMA_ESTANQUE) espacioDisponible = CAPACIDAD_MAXIMA_ESTANQUE;
+
+                document.getElementById('txtEstadoStock').innerText = `Estanque actual: ~${stockActualEstimado.toFixed(0)} L | Espacio disp: ~${espacioDisponible.toFixed(0)} L (Máx: 5200L)`;
+            } catch (err) {
+                stockActualEstimado = 0;
+                document.getElementById('txtEstadoStock').innerText = `Capacidad máxima estanque: 5.200 Litros`;
+            }
+        }
+
+        function formatearYBuscarProveedor(input) {
+            let val = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
+            if (val.length > 1) {
+                let cuerpo = val.slice(0, -1);
+                let dv = val.slice(-1);
+                cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                val = cuerpo + "-" + dv;
+            }
+            input.value = val;
+
+            const queryLimpia = input.value.replace(/[^0-9kK]/g, '').toLowerCase();
+            const cajaSugerencias = document.getElementById('sugerenciasProveedores');
+            cajaSugerencias.innerHTML = '';
+
+            if (queryLimpia.length === 0) {
+                cajaSugerencias.style.display = 'none';
+                return;
+            }
+
+            const filtrados = listaProveedoresCache.filter(p => (p.rut || '').replace(/[^0-9kK]/g, '').toLowerCase().includes(queryLimpia));
+            if (filtrados.length > 0) {
+                cajaSugerencias.style.display = 'block';
+                filtrados.forEach(prov => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerText = `${prov.rut} - ${prov.nombre}`;
+                    div.onclick = function() {
+                        document.getElementById('txtRutProveedor').value = prov.rut;
+                        document.getElementById('txtProveedor').value = prov.nombre;
+                        cajaSugerencias.style.display = 'none';
+                    };
+                    cajaSugerencias.appendChild(div);
+                });
+            } else {
+                cajaSugerencias.style.display = 'none';
+            }
+        }
+
+        function bloquearLetrasCientificas(e) { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
+        function limpiarNumeroEstricto(input) { input.value = input.value.replace(/[eE\+\-]/g, ''); }
+        
+        function calcularUnitarioPrevio() {
+            const litros = parseFloat(document.getElementById('txtLitrosCompra').value) || 0;
+            const costo = parseFloat(document.getElementById('txtCostoTotal').value) || 0;
+            if (litros > 0 && costo > 0) {
+                let unitario = Math.round(costo / litros);
+                document.getElementById('lblUnitarioCalculado').innerText = "$ " + unitario.toLocaleString('es-CL') + " / L";
+            } else {
+                document.getElementById('lblUnitarioCalculado').innerText = "$ 0 / L";
+            }
+        }
+
+        function cambiarPaso(nuevoPaso) {
+            document.getElementById(`step-${pasoActual}`).classList.remove('active');
+            pasoActual = nuevoPaso;
+            document.getElementById(`step-${pasoActual}`).classList.add('active');
+            document.getElementById('lblStepIndicator').innerText = `Paso ${pasoActual} de ${totalPasos}`;
+            document.getElementById('lblStepTitle').innerText = nombresPasos[pasoActual - 1];
+
+            if (pasoActual === 4) {
+                document.getElementById('resFactura').innerText = document.getElementById('txtFactura').value.trim();
+                document.getElementById('resProveedor').innerText = `${document.getElementById('txtRutProveedor').value} - ${document.getElementById('txtProveedor').value}`;
+                document.getElementById('resLitros').innerText = `${parseFloat(document.getElementById('txtLitrosCompra').value || 0).toLocaleString('es-CL')} L`;
+                document.getElementById('resCostoTotal').innerText = "$ " + parseFloat(document.getElementById('txtCostoTotal').value || 0).toLocaleString('es-CL');
+                document.getElementById('resOdometroBomba').innerText = parseFloat(document.getElementById('txtOdometroFinalBomba').value || 0).toLocaleString('es-CL');
+            }
+
+            setTimeout(() => {
+                if(pasoActual === 1) document.getElementById('txtFactura').focus();
+                if(pasoActual === 2) document.getElementById('txtLitrosCompra').focus();
+                if(pasoActual === 3) document.getElementById('txtOdometroFinalBomba').focus();
+            }, 100);
+        }
+
+        function validarYPasar(paso) {
+            if (paso === 1) {
+                if (!document.getElementById('txtFactura').value.trim()) { alert('Debe ingresar el número de factura o guía (solo números).'); return; }
+                if (!document.getElementById('txtRutProveedor').value.trim() || !document.getElementById('txtProveedor').value.trim()) { alert('Debe ingresar los datos del proveedor.'); return; }
+            }
+            if (paso === 2) {
+                const litros = parseFloat(document.getElementById('txtLitrosCompra').value);
+                const costo = parseFloat(document.getElementById('txtCostoTotal').value);
+                if (isNaN(litros) || litros <= 0) { alert('Ingrese una cantidad válida de litros.'); return; }
+                if (isNaN(costo) || costo <= 0) { alert('Ingrese un costo total válido.'); return; }
+
+                let espacioRestante = CAPACIDAD_MAXIMA_ESTANQUE - stockActualEstimado;
+                if (espacioRestante < 0) espacioRestante = 0;
+
+                if (litros > (espacioRestante + 50)) {
+                    let confirmarExceso = confirm(`⚠️ ALERTA DE CAPACIDAD DE ESTANQUE:\n\nEstá intentando ingresar ${litros} L, pero el estanque cisterna solo tiene un espacio disponible estimado de ~${espacioRestante.toFixed(0)} L (Capacidad máx: 5.200 L).\n\nSi el camión venía con más combustible o excede la capacidad, deberá llevar la guía a la oficina administrativa.\n\n¿Desea continuar de todas formas?`);
+                    if (!confirmarExceso) return;
+                }
+            }
+            if (paso === 3) {
+                const odometroBomba = parseFloat(document.getElementById('txtOdometroFinalBomba').value);
+                if (isNaN(odometroBomba) || odometroBomba < 0) { alert('Ingrese un odómetro/horómetro de bomba válido.'); return; }
+                
+                if (odometroBaseCisterna > 0 && odometroBomba < odometroBaseCisterna) {
+                    alert(`⚠️ Restricción de Coherencia:\nEl odómetro ingresado (${odometroBomba.toLocaleString('es-CL')}) no puede ser menor al valor base anterior (${odometroBaseCisterna.toLocaleString('es-CL')}). Al ser una compra, el contador debe mantenerse o subir solo si hubo movimiento.`);
+                    return;
+                }
+
+                if (odometroBaseCisterna > 0 && odometroBomba > odometroBaseCisterna) {
+                    let avanceContador = odometroBomba - odometroBaseCisterna;
+                    let confirmarDesfase = confirm(`⚠️ ALERTA DE DESFASE EN RECEPCIÓN (Pilla-Bicicletas):\n\nEstás registrando una COMPRA (ingreso de combustible), pero el contador de la bomba avanzó ${avanceContador.toFixed(2)} unidades (${odometroBaseCisterna} a ${odometroBomba}).\n\n¿Desea continuar de todas formas con este avance de bomba?\n\nSERÁN ENVIADOS CORREOS DE AVISO A LOS ENTES CORRESPONDIENTES DE AUDITORÍA.`);
+                    if (!confirmarDesfase) return;
+                }
+            }
+            cambiarPaso(paso + 1);
+        }
+
+        async function finalizarCompra(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardar');
+            btn.disabled = true;
+            btn.innerText = 'Guardando compra...';
+
+            const factura = document.getElementById('txtFactura').value.trim();
+            const rutProveedor = document.getElementById('txtRutProveedor').value.trim();
+            const proveedor = document.getElementById('txtProveedor').value.trim();
+            const litros = parseFloat(document.getElementById('txtLitrosCompra').value) || 0;
+            const costoTotal = parseFloat(document.getElementById('txtCostoTotal').value) || 0;
+            const odometroFinalBomba = parseFloat(document.getElementById('txtOdometroFinalBomba').value) || 0;
+
+            const ahora = new Date();
+            const fechaSoloHoy = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+
+            try {
+                // Actualizar cierre diario de la cisterna con el odómetro final
+                await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_final: odometroFinalBomba }], { onConflict: ['fecha'] });
+
+                // Insertar con la fecha en texto para evitar líos de zona horaria
+                const { error: errInsert } = await _supabase.from('compras_cisterna').insert([
+                    {
+                        factura: factura,
+                        rut_proveedor: rutProveedor,
+                        proveedor: proveedor,
+                        litros: litros,
+                        costo_total: costoTotal,
+                        odometro_bomba: odometroFinalBomba,
+                        fecha: fechaSoloHoy
+                    }
+                ]);
+
+                if (errInsert) throw errInsert;
+
+                alert('¡Compra de combustible registrada con éxito y odómetro de cisterna actualizado!');
+                window.location.href = 'mobile_index.html';
+
+            } catch (err) {
+                alert('Error al registrar la compra: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Registrar Compra';
+            }
+        }
+    </script>
+</body>
+</html>

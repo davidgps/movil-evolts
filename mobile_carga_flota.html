@@ -20,30 +20,31 @@
             --accent-amber: #F59E0B;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-        .form-container { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 16px; }
-        .logo-box { background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%); border: 1px solid rgba(96, 165, 250, 0.35); padding: 12px 16px; border-radius: 12px; text-align: center; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); }
-        .logo-box img { max-height: 55px; height: auto; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
-        .form-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .form-header h2 { font-size: 14.5px; color: white; display: flex; align-items: center; gap: 8px; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .form-container { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 12px; }
+        .logo-box { background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(11, 17, 32, 0.9) 100%); border: 1px solid rgba(96, 165, 250, 0.35); padding: 10px 14px; border-radius: 12px; text-align: center; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5); }
+        .logo-box img { max-height: 45px; height: auto; width: auto; max-width: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7)); }
+        .form-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .form-header h2 { font-size: 13.5px; color: white; display: flex; align-items: center; gap: 6px; }
         .form-header h2 i { color: var(--accent-cyan); }
-        .btn-volver { background: #1F2937; color: var(--text-muted); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 8px; font-size: 11px; text-decoration: none; }
+        .btn-volver { background: #1F2937; color: var(--text-muted); border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 8px; font-size: 11px; text-decoration: none; }
         .step-indicator { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .step-content { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.25s ease-in-out; }
+        .step-content { display: none; flex-direction: column; gap: 10px; animation: fadeIn 0.25s ease-in-out; }
         .step-content.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-        .form-control { background-color: #1F2937; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; color: white; font-size: 16px; outline: none; width: 100%; }
+        label { font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .form-control { background-color: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; color: white; font-size: 15px; outline: none; width: 100%; }
         .form-control:focus { border-color: var(--accent-cyan); }
-        .odometer-hint { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 8px 12px; font-size: 11.5px; color: #FCD34D; display: flex; align-items: center; gap: 8px; }
-        .suggestions-box { background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; max-height: 140px; overflow-y: auto; display: none; margin-top: -6px; }
-        .suggestion-item { padding: 10px 14px; font-size: 14px; font-weight: 700; color: #93C5FD; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .form-control[readonly] { background-color: #111827; color: #93C5FD; border-color: rgba(147, 197, 253, 0.3); cursor: not-allowed; font-weight: 600; }
+        .odometer-hint { background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 8px; padding: 8px; font-size: 11.5px; color: #38BDF8; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .suggestions-box { background: #1F2937; border: 1px solid var(--border-color); border-radius: 8px; max-height: 110px; overflow-y: auto; display: none; margin-top: -4px; }
+        .suggestion-item { padding: 8px 12px; font-size: 12.5px; font-weight: 600; color: #93C5FD; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .suggestion-item:hover { background: rgba(37, 99, 235, 0.3); color: white; }
-        .step-buttons { display: flex; gap: 10px; margin-top: 6px; }
-        .btn-step { flex: 1; padding: 13px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .step-buttons { display: flex; gap: 8px; margin-top: 4px; }
+        .btn-step { flex: 1; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .btn-next, .btn-submit { background: linear-gradient(135deg, var(--accent-blue) 0%, #1D4ED8 100%); color: white; }
         .btn-prev { background: #374151; color: var(--text-main); flex: 0.4; }
-        .footer-signature { text-align: center; padding-top: 10px; font-size: 10.5px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%; margin-top: 10px; }
+        .footer-signature { text-align: center; padding-top: 6px; font-size: 10px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%; margin-top: 6px; }
         .footer-signature strong { color: #93C5FD; font-weight: 600; }
     </style>
 </head>
@@ -51,51 +52,82 @@
     <div class="form-container">
         <div class="logo-box">
             <img src="logoEVOLTS.png" alt="EVOLTS Ingeniería y Construcción">
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase;">Control Operativo Camión Cisterna</div>
+            <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase;">Control Operativo Camión Cisterna</div>
         </div>
         <div class="form-header">
             <h2><i class="fa-solid fa-gas-pump"></i> Carga a Flota (Paso a Paso)</h2>
             <a href="mobile_index.html" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Menú</a>
         </div>
         <div class="step-indicator">
-            <span id="lblStepIndicator">Paso 1 de 4</span>
+            <span id="lblStepIndicator">Paso 1 de 5</span>
             <span id="lblStepTitle" style="color: var(--accent-cyan);">Patente</span>
         </div>
         <form id="formCargaMóvil" onsubmit="finalizarCarga(event)">
+            
+            <!-- PASO 1: PATENTE -->
             <div class="step-content active" id="step-1">
                 <label>Buscar Patente (Empieza con...)</label>
-                <input type="text" id="txtPatente" class="form-control" placeholder="Ej: H..." maxlength="6" oninput="filtrarPatentes(this)" autocomplete="off">
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="txtPatente" class="form-control" placeholder="Ej: H..." maxlength="6" oninput="filtrarPatentes(this)" autocomplete="off" style="flex: 1.2;">
+                    <input type="text" id="txtPatenteVisual" class="form-control" placeholder="Modelo / Conductor..." readonly style="flex: 1.8; background: #0f172a; color: #34D399; font-size: 12px;">
+                </div>
                 <div id="sugerenciasPatentes" class="suggestions-box"></div>
-                <div class="step-buttons" style="margin-top: 10px;">
+                <div class="step-buttons" style="margin-top: 8px;">
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(1)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
+
+            <!-- PASO 2: LITROS -->
             <div class="step-content" id="step-2">
                 <label>Litros Cargados</label>
-                <input type="number" step="0.01" min="0" id="txtLitros" class="form-control" placeholder="0.00" inputmode="decimal" onkeydown="evitarCaracteresInvalidos(event)">
+                <input type="number" step="0.01" min="0" id="txtLitros" class="form-control" placeholder="0.00" inputmode="decimal" onkeydown="bloquearLetrasCientificas(event)">
                 <div class="step-buttons">
                     <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(1)"><i class="fa-solid fa-arrow-left"></i></button>
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(2)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
+
+            <!-- PASO 3: ODÓMETRO DEL VEHÍCULO -->
             <div class="step-content" id="step-3">
-                <label>Odómetro Actual (Km)</label>
+                <label>Odómetro Actual del Vehículo (Km)</label>
                 <div class="odometer-hint" id="hintOdodmetro">
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span id="txtUltimoOdometro">Consultando último registro...</span>
+                    <span id="txtUltimoOdometroVehiculo">Consultando último registro...</span>
                 </div>
-                <input type="number" step="1" min="0" id="txtOdometro" class="form-control" placeholder="Ej: 45200" inputmode="numeric" onkeydown="evitarPuntosYComas(event)">
+                <input type="number" step="1" min="0" id="txtOdometro" class="form-control" placeholder="Ej: 45200" inputmode="numeric" onkeydown="bloquearLetrasCientificas(event)">
                 <div class="step-buttons">
                     <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(2)"><i class="fa-solid fa-arrow-left"></i></button>
                     <button type="button" class="btn-step btn-next" onclick="validarYPasar(3)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
+
+            <!-- PASO 4: ODÓMETRO / HORÓMETRO FINAL DE BOMBA (CISSERNA) -->
             <div class="step-content" id="step-4">
-                <label>Persona que Carga (Conductor)</label>
-                <input type="text" id="txtPersonaCarga" class="form-control" placeholder="Nombre completo" autocomplete="off">
-                <div class="step-buttons">
+                <label>Odómetro / Horómetro Final de Bomba</label>
+                <div class="odometer-hint">
+                    <i class="fa-solid fa-gauge"></i> <span id="lblOdometroBaseCisterna">Cargando base anterior...</span>
+                </div>
+                <input type="number" step="any" min="0" id="txtOdometroFinalBomba" class="form-control" placeholder="Ej: 147625" inputmode="numeric" onkeydown="bloquearLetrasCientificas(event)">
+                <div class="step-buttons" style="margin-top: 12px;">
                     <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(3)"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button type="submit" class="btn-step btn-submit" id="btnGuardar"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                    <button type="button" class="btn-step btn-next" onclick="validarYPasar(4)">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO 5: PERSONA QUE CARGA Y CONFIRMACIÓN -->
+            <div class="step-content" id="step-5">
+                <label>Persona que Carga (Conductor / Operador)</label>
+                <input type="text" id="txtPersonaCarga" class="form-control" placeholder="Nombre completo" autocomplete="off" style="margin-bottom: 6px;">
+                
+                <div style="background: #1F2937; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; font-size: 11.5px; display: flex; flex-direction: column; gap: 4px;">
+                    <div><span style="color: var(--text-muted);">Patente:</span> <strong id="resPatente" style="color: white;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Litros:</span> <strong id="resLitros" style="color: #6EE7B7;">-</strong></div>
+                    <div><span style="color: var(--text-muted);">Odómetro Bomba Final:</span> <strong id="resOdometroBomba" style="color: #38BDF8;">-</strong></div>
+                </div>
+
+                <div class="step-buttons">
+                    <button type="button" class="btn-step btn-prev" onclick="cambiarPaso(4)"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button type="submit" class="btn-step btn-submit" id="btnGuardar"><i class="fa-solid fa-floppy-disk"></i> Guardar Carga</button>
                 </div>
             </div>
         </form>
@@ -109,10 +141,11 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let pasoActual = 1;
-        const totalPasos = 4;
-        const nombresPasos = ["Patente", "Litros", "Odómetro", "Persona Carga"];
+        const totalPasos = 5;
+        const nombresPasos = ["Patente", "Litros", "Odómetro Vehículo", "Odómetro Bomba", "Confirmar"];
         let diccionarioVehiculos = {}; 
-        let ultimoOdometroRegistrado = 0;
+        let ultimoOdometroVehiculoReg = 0;
+        let odometroBaseCisterna = 0;
 
         window.onload = async function() {
             try {
@@ -129,7 +162,18 @@
                         }
                     });
                 }
-            } catch(e) { console.error("Error cargando la flota:", e); }
+
+                // HERENCIA AUTOMÁTICA DEL ODÓMETRO BASE DE BOMBA
+                const ahora = new Date();
+                const fechaHoyStr = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+                const { data: cierreHoy } = await _supabase.from('cierre_diario_cisterna').select('odometro_inicial, odometro_final').eq('fecha', fechaHoyStr).maybeSingle();
+                
+                if (cierreHoy) {
+                    odometroBaseCisterna = parseFloat(cierreHoy.odometro_final || cierreHoy.odometro_inicial) || 0;
+                }
+                document.getElementById('lblOdometroBaseCisterna').innerText = `Odómetro Base Cisterna: ${odometroBaseCisterna.toLocaleString('es-CL')}`;
+
+            } catch(e) { console.error("Error inicializando carga flota:", e); }
         };
 
         function filtrarPatentes(input) {
@@ -139,7 +183,13 @@
             const cajaSugerencias = document.getElementById('sugerenciasPatentes');
             cajaSugerencias.innerHTML = '';
             const listaPatentes = Object.keys(diccionarioVehiculos);
-            if (texto.length === 0 || listaPatentes.length === 0) { cajaSugerencias.style.display = 'none'; return; }
+
+            if (texto.length === 0 || listaPatentes.length === 0) { 
+                cajaSugerencias.style.display = 'none'; 
+                document.getElementById('txtPatenteVisual').value = '';
+                return; 
+            }
+
             const filtradas = listaPatentes.filter(pat => pat.startsWith(texto));
             if (filtradas.length > 0) {
                 cajaSugerencias.style.display = 'block';
@@ -147,27 +197,32 @@
                     const div = document.createElement('div');
                     div.className = 'suggestion-item';
                     div.innerText = pat;
-                    div.onclick = function() { input.value = pat; cajaSugerencias.style.display = 'none'; };
+                    div.onclick = function() { 
+                        input.value = pat; 
+                        let infoV = diccionarioVehiculos[pat];
+                        document.getElementById('txtPatenteVisual').value = `${infoV.marca_modelo} (${infoV.conductor_titular})`;
+                        cajaSugerencias.style.display = 'none';
+                        consultarUltimoOdometroVehiculo(pat);
+                    };
                     cajaSugerencias.appendChild(div);
                 });
             } else { cajaSugerencias.style.display = 'none'; }
         }
 
-        async function consultarUltimoOdometro(patente) {
+        async function consultarUltimoOdometroVehiculo(patente) {
             try {
                 const { data, error } = await _supabase.from('cargas_flota').select('nuevo_odometro').eq('patente', patente).order('id', { ascending: false }).limit(1);
                 if (!error && data && data.length > 0) {
-                    ultimoOdometroRegistrado = parseFloat(data[0].nuevo_odometro) || 0;
-                } else { ultimoOdometroRegistrado = 0; }
-                document.getElementById('txtUltimoOdometro').innerText = `Último registrado en sistema: ${ultimoOdometroRegistrado.toLocaleString('es-CL')} Km`;
+                    ultimoOdometroVehiculoReg = parseFloat(data[0].nuevo_odometro) || 0;
+                } else { ultimoOdometroVehiculoReg = 0; }
+                document.getElementById('txtUltimoOdometroVehiculo').innerText = `Último registrado en vehículo: ${ultimoOdometroVehiculoReg.toLocaleString('es-CL')} Km`;
             } catch (err) {
-                ultimoOdometroRegistrado = 0;
-                document.getElementById('txtUltimoOdometro').innerText = 'Sin registro previo o error de red';
+                ultimoOdometroVehiculoReg = 0;
+                document.getElementById('txtUltimoOdometroVehiculo').innerText = 'Sin registro previo o error de red';
             }
         }
 
-        function evitarPuntosYComas(e) { if (['.', ',', 'e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
-        function evitarCaracteresInvalidos(e) { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
+        function bloquearLetrasCientificas(e) { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault(); }
 
         function cambiarPaso(nuevoPaso) {
             document.getElementById(`step-${pasoActual}`).classList.remove('active');
@@ -175,11 +230,19 @@
             document.getElementById(`step-${pasoActual}`).classList.add('active');
             document.getElementById('lblStepIndicator').innerText = `Paso ${pasoActual} de ${totalPasos}`;
             document.getElementById('lblStepTitle').innerText = nombresPasos[pasoActual - 1];
+
+            if (pasoActual === 5) {
+                document.getElementById('resPatente').innerText = document.getElementById('txtPatente').value.trim().toUpperCase();
+                document.getElementById('resLitros').innerText = `${parseFloat(document.getElementById('txtLitros').value || 0).toLocaleString('es-CL')} L`;
+                document.getElementById('resOdometroBomba').innerText = parseFloat(document.getElementById('txtOdometroFinalBomba').value || 0).toLocaleString('es-CL');
+            }
+
             setTimeout(() => {
                 if(pasoActual === 1) document.getElementById('txtPatente').focus();
                 if(pasoActual === 2) document.getElementById('txtLitros').focus();
                 if(pasoActual === 3) document.getElementById('txtOdometro').focus();
-                if(pasoActual === 4) document.getElementById('txtPersonaCarga').focus();
+                if(pasoActual === 4) document.getElementById('txtOdometroFinalBomba').focus();
+                if(pasoActual === 5) document.getElementById('txtPersonaCarga').focus();
             }, 100);
         }
 
@@ -188,7 +251,7 @@
                 const val = document.getElementById('txtPatente').value.trim().toUpperCase();
                 if (val.length === 0) { alert('Debe ingresar una patente.'); return; }
                 if (Object.keys(diccionarioVehiculos).length > 0 && !diccionarioVehiculos[val]) { alert('Esta patente no corresponde a la flota.'); return; }
-                await consultarUltimoOdometro(val);
+                await consultarUltimoOdometroVehiculo(val);
             }
             if (paso === 2) {
                 const val = parseFloat(document.getElementById('txtLitros').value);
@@ -197,9 +260,29 @@
             if (paso === 3) {
                 const val = parseFloat(document.getElementById('txtOdometro').value);
                 if (isNaN(val) || val < 0) { alert('Ingrese un odómetro válido en números.'); return; }
-                if (val <= ultimoOdometroRegistrado) {
-                    alert(`No puede ingresar un odómetro menor o igual al último (${ultimoOdometroRegistrado.toLocaleString('es-CL')} Km).`);
+                if (val <= ultimoOdometroVehiculoReg) {
+                    alert(`No puede ingresar un odómetro menor o igual al último del vehículo (${ultimoOdometroVehiculoReg.toLocaleString('es-CL')} Km).`);
                     return;
+                }
+            }
+            if (paso === 4) {
+                const odometroBomba = parseFloat(document.getElementById('txtOdometroFinalBomba').value);
+                const litrosIngresados = parseFloat(document.getElementById('txtLitros').value) || 0;
+
+                if (isNaN(odometroBomba) || odometroBomba < 0) { alert('Ingrese un odómetro/horómetro de bomba válido.'); return; }
+                
+                if (odometroBaseCisterna > 0 && odometroBomba <= odometroBaseCisterna) {
+                    alert(`⚠️ Restricción de Coherencia:\nEl odómetro ingresado (${odometroBomba.toLocaleString('es-CL')}) no puede ser menor o igual al valor base anterior (${odometroBaseCisterna.toLocaleString('es-CL')}).`);
+                    return;
+                }
+
+                // VALIDACIÓN "PILLA-BICICLETAS" CON AVISO DE AUDITORÍA
+                if (odometroBaseCisterna > 0) {
+                    let avanceContador = odometroBomba - odometroBaseCisterna;
+                    if (Math.abs(avanceContador - litrosIngresados) > 0.5) {
+                        let confirmarDesfase = confirm(`⚠️ ALERTA DE DESFASE (Pilla-Bicicletas):\n\nLos litros cargados son ${litrosIngresados} L, pero el contador de la bomba avanzó ${avanceContador.toFixed(2)} unidades (${odometroBaseCisterna} a ${odometroBomba}).\n\n¿Desea continuar de todas formas con este desfase?\n\nSERÁN ENVIADOS CORREOS DE AVISO A LOS ENTES CORRESPONDIENTES DE AUDITORÍA.`);
+                        if (!confirmarDesfase) return;
+                    }
                 }
             }
             cambiarPaso(paso + 1);
@@ -239,11 +322,12 @@
 
             const btn = document.getElementById('btnGuardar');
             btn.disabled = true;
-            btn.innerText = 'Verificando jornada...';
+            btn.innerText = 'Guardando carga...';
 
             const patente = document.getElementById('txtPatente').value.trim().toUpperCase();
             const litros = parseFloat(document.getElementById('txtLitros').value) || 0;
-            let nuevoOdometro = parseFloat(document.getElementById('txtOdometro').value) || 0;
+            let nuevoOdometroVehiculo = parseFloat(document.getElementById('txtOdometro').value) || 0;
+            let odometroFinalBomba = parseFloat(document.getElementById('txtOdometroFinalBomba').value) || 0;
             const personaCarga = personaCargaVal;
             
             const ahora = new Date();
@@ -258,40 +342,20 @@
             const fechaHoraActual = `${anio}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
 
             try {
-                const { data: cargasHoy, error: errBusqueda } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
-                const { data: ventasHoy, error: errBusqVentas } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
-                if (errBusqueda || errBusqVentas) throw (errBusqueda || errBusqVentas);
+                const { data: cargasHoy } = await _supabase.from('cargas_flota').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
+                const { data: ventasHoy } = await _supabase.from('ventas_combustible').select('id').gte('fecha_hora', fechaSoloHoy + ' 00:00:00').lte('fecha_hora', fechaSoloHoy + ' 23:59:59');
 
                 let totalMovsHoy = (cargasHoy ? cargasHoy.length : 0) + (ventasHoy ? ventasHoy.length : 0);
-                let odometroCisternaParaGuardar = nuevoOdometro;
 
                 if (totalMovsHoy === 0) {
-                    let inputCisterna = prompt("⚠️ Es la primera transacción del día.\nIngrese el Odómetro / Horómetro Inicial de la Bomba del Cisterna (tal como lo ve en pantalla al finalizar):");
-                    if (inputCisterna === null) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-                        return;
-                    }
-
-                    let odometroLeido = parseFloat(inputCisterna);
-                    if (isNaN(odometroLeido) || odometroLeido < 0) {
-                        alert("Debe ingresar un valor numérico válido.");
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-                        return;
-                    }
-
-                    // CORRECCIÓN MATEMÁTICA: Restamos los litros de esta primera transacción para aislar el odómetro real
-                    odometroCisternaParaGuardar = odometroLeido - litros;
-
-                    btn.innerText = 'Registrando apertura cisterna...';
-                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisternaParaGuardar }], { onConflict: ['fecha'] });
-
-                    btn.innerText = 'Procesando cierres anteriores...';
+                    let odometroCisternaParaGuardar = odometroFinalBomba - litros;
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisternaParaGuardar, odometro_final: odometroFinalBomba }], { onConflict: ['fecha'] });
                     await verificarYProcesarCierreCisterna(odometroCisternaParaGuardar, fechaSoloHoy);
+                } else {
+                    // UPSERT: Sobreescribe limpiamente el odómetro final en el cierre diario de cisterna
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_final: odometroFinalBomba }], { onConflict: ['fecha'] });
                 }
 
-                btn.innerText = 'Grabando carga...';
                 const datosVehiculo = diccionarioVehiculos[patente] || { tipo: 'GENERAL', marca_modelo: 'NO ESPECIFICADO', conductor_titular: 'SIN ASIGNAR' };
 
                 const { error: errInsert } = await _supabase.from('cargas_flota').insert([
@@ -302,21 +366,21 @@
                         marca_modelo: datosVehiculo.marca_modelo,
                         conductor_titular: datosVehiculo.conductor_titular,
                         persona_carga: personaCarga,
-                        odometro_anterior: ultimoOdometroRegistrado,
-                        nuevo_odometro: nuevoOdometro,
+                        odometro_anterior: ultimoOdometroVehiculoReg,
+                        nuevo_odometro: nuevoOdometroVehiculo,
                         litros: litros
                     }
                 ]);
 
                 if (errInsert) throw errInsert;
 
-                alert('¡Carga registrada con éxito y control de cisterna actualizado!');
+                alert('¡Carga a flota registrada con éxito y control de cisterna actualizado!');
                 window.location.href = 'mobile_index.html';
 
             } catch (err) {
                 alert('Error en el proceso: ' + err.message);
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Carga';
             }
         }
     </script>

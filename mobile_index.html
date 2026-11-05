@@ -17,6 +17,7 @@
             --text-muted: #9CA3AF;
             --accent-blue: #2563EB;
             --accent-cyan: #0EA5E9;
+            --accent-emerald: #10B981;
             --accent-amber: #F59E0B;
         }
 
@@ -146,6 +147,9 @@
         .btn-carga { border-left: 4px solid var(--accent-blue); }
         .btn-carga i { color: var(--accent-blue); font-size: 18px; width: 24px; text-align: center; }
 
+        .btn-compra { border-left: 4px solid var(--accent-emerald); }
+        .btn-compra i { color: var(--accent-emerald); font-size: 18px; width: 24px; text-align: center; }
+
         .btn-venta { border-left: 4px solid var(--accent-amber); }
         .btn-venta i { color: var(--accent-amber); font-size: 18px; width: 24px; text-align: center; }
 
@@ -197,6 +201,7 @@
         }
 
         .mov-tipo-carga { color: var(--accent-cyan); font-weight: 700; }
+        .mov-tipo-compra { color: var(--accent-emerald); font-weight: 700; }
         .mov-tipo-venta { color: var(--accent-amber); font-weight: 700; }
         .mov-patente { font-weight: 700; color: #93C5FD; background: rgba(37, 99, 235, 0.15); padding: 1px 3px; border-radius: 3px; }
         .mov-conductor { color: var(--text-muted); font-size: 9.5px; }
@@ -253,18 +258,26 @@
                 </div>
             </a>
 
+            <a href="mobile_compra_cisterna.html" class="btn-menu btn-compra">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+                <div class="btn-text-group">
+                    <div>2. Registrar Compra Cisterna</div>
+                    <div class="btn-desc">Ingreso de combustible de proveedores</div>
+                </div>
+            </a>
+
             <a href="mobile_venta_combustible.html" class="btn-menu btn-venta">
                 <i class="fa-solid fa-file-invoice-dollar"></i>
                 <div class="btn-text-group">
-                    <div>2. Registrar Venta / Terceros</div>
+                    <div>3. Registrar Venta / Terceros</div>
                     <div class="btn-desc">Despacho externo de combustible</div>
                 </div>
             </a>
         </div>
 
-        <!-- Últimos 5 Movimientos Registrados con Conductor -->
+        <!-- Últimos Movimientos Registrados con Conductor -->
         <div class="ultimos-movimientos-card">
-            <div class="ultimos-titulo"><i class="fa-solid fa-clock-rotate-left"></i> Últimos 5 Registros en Sistema</div>
+            <div class="ultimos-titulo"><i class="fa-solid fa-clock-rotate-left"></i> Últimos Registros en Sistema</div>
             <div id="listaUltimosMovimientos">
                 <div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px;">Cargando historial...</div>
             </div>
@@ -283,10 +296,11 @@
 
         window.onload = async function() {
             try {
-                const [compras, cargas, ventas, ultimasCargas, ultimasVentas] = await Promise.all([
+                const [compras, cargas, ventas, ultimasCompras, ultimasCargas, ultimasVentas] = await Promise.all([
                     _supabase.from('compras_cisterna').select('*'),
                     _supabase.from('cargas_flota').select('litros'),
                     _supabase.from('ventas_combustible').select('litros'),
+                    _supabase.from('compras_cisterna').select('fecha, litros, proveedor, factura').order('id', { ascending: false }).limit(5),
                     _supabase.from('cargas_flota').select('fecha_hora, litros, patente, persona_carga').order('id', { ascending: false }).limit(5),
                     _supabase.from('ventas_combustible').select('fecha_hora, litros, patente, nombre_cliente').order('id', { ascending: false }).limit(5)
                 ]);
@@ -307,26 +321,35 @@
                 document.getElementById('lblCostoLitro').innerText = costoPromedio > 0 ? '$ ' + Math.round(costoPromedio).toLocaleString('es-CL') : '$ 1.200 (Est.)';
 
                 let combinados = [];
+                (ultimasCompras.data || []).forEach(c => combinados.push({ 
+                    ...c, 
+                    fecha_orden: c.fecha || '',
+                    tipo: 'COMPRA', 
+                    patente: `Guía/Fac: ${c.factura || 'S/N'}`,
+                    responsable: c.proveedor || 'Proveedor' 
+                }));
                 (ultimasCargas.data || []).forEach(c => combinados.push({ 
                     ...c, 
+                    fecha_orden: c.fecha_hora || '',
                     tipo: 'CARGA', 
                     responsable: c.persona_carga || 'S/C' 
                 }));
                 (ultimasVentas.data || []).forEach(v => combinados.push({ 
                     ...v, 
+                    fecha_orden: v.fecha_hora || '',
                     tipo: 'VENTA', 
                     responsable: v.nombre_cliente || 'Tercero' 
                 }));
 
-                combinados.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+                combinados.sort((a, b) => new Date(b.fecha_orden) - new Date(a.fecha_orden));
                 let ultimosCinco = combinados.slice(0, 5);
 
                 const contenedorLista = document.getElementById('listaUltimosMovimientos');
                 if (ultimosCinco.length > 0) {
                     contenedorLista.innerHTML = '';
                     ultimosCinco.forEach(m => {
-                        let fechaCorta = m.fecha_hora ? m.fecha_hora.substring(5, 16) : '--/-- --:--';
-                        let claseTipo = m.tipo === 'CARGA' ? 'mov-tipo-carga' : 'mov-tipo-venta';
+                        let fechaCorta = m.fecha_orden ? m.fecha_orden.substring(5, 16) : '--/-- --:--';
+                        let claseTipo = m.tipo === 'CARGA' ? 'mov-tipo-carga' : (m.tipo === 'COMPRA' ? 'mov-tipo-compra' : 'mov-tipo-venta');
                         let div = document.createElement('div');
                         div.className = 'movimiento-item';
                         div.innerHTML = `
@@ -336,7 +359,7 @@
                                 <span class="mov-patente">${m.patente || 'S/P'}</span>
                                 <span class="mov-conductor">(${m.responsable})</span>
                             </div>
-                            <div class="mov-litros">${parseFloat(m.litros || 0).toLocaleString('es-CL')} L</div>
+                            <div class="mov-litros">+${parseFloat(m.litros || 0).toLocaleString('es-CL')} L</div>
                         `;
                         contenedorLista.appendChild(div);
                     });
