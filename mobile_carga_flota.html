@@ -163,13 +163,39 @@
                     });
                 }
 
-                // HERENCIA AUTOMÁTICA DEL ODÓMETRO BASE DE BOMBA
+                // HERENCIA AUTOMÁTICA DEL ODÓMETRO BASE DE BOMBA (DÍA ANTERIOR -> INICIAL DE HOY)
                 const ahora = new Date();
-                const fechaHoyStr = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+                const anioH = ahora.getFullYear();
+                const mesH = String(ahora.getMonth() + 1).padStart(2, '0');
+                const diaH = String(ahora.getDate()).padStart(2, '0');
+                const fechaHoyStr = `${anioH}-${mesH}-${diaH}`;
+
+                // Calcular fecha de ayer
+                let fechaAyerObj = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() - 1);
+                let anioA = fechaAyerObj.getFullYear();
+                let mesA = String(fechaAyerObj.getMonth() + 1).padStart(2, '0');
+                let diaA = String(fechaAyerObj.getDate()).padStart(2, '0');
+                let fechaAyerStr = `${anioA}-${mesA}-${diaA}`;
+
+                // Consultar cierre de ayer para obtener su odómetro final
+                const { data: cierreAyer } = await _supabase.from('cierre_diario_cisterna').select('odometro_final').eq('fecha', fechaAyerStr).maybeSingle();
+                let odometroFinalAyer = cierreAyer ? (parseFloat(cierreAyer.odometro_final) || 0) : 0;
+
+                // Consultar si ya existe registro para hoy
                 const { data: cierreHoy } = await _supabase.from('cierre_diario_cisterna').select('odometro_inicial, odometro_final').eq('fecha', fechaHoyStr).maybeSingle();
                 
                 if (cierreHoy) {
-                    odometroBaseCisterna = parseFloat(cierreHoy.odometro_final || cierreHoy.odometro_inicial) || 0;
+                    odometroBaseCisterna = parseFloat(cierreHoy.odometro_final) || parseFloat(cierreHoy.odometro_inicial) || 0;
+                } else if (odometroFinalAyer > 0) {
+                    // Si no existe hoy pero hay de ayer, inicializamos hoy con el final de ayer
+                    odometroBaseCisterna = odometroFinalAyer;
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ 
+                        fecha: fechaHoyStr, 
+                        odometro_inicial: odometroFinalAyer, 
+                        odometro_final: odometroFinalAyer 
+                    }], { onConflict: ['fecha'] });
+                } else {
+                    odometroBaseCisterna = 0;
                 }
                 document.getElementById('lblOdometroBaseCisterna').innerText = `Odómetro Base Cisterna: ${odometroBaseCisterna.toLocaleString('es-CL')}`;
 
@@ -347,14 +373,48 @@
 
                 let totalMovsHoy = (cargasHoy ? cargasHoy.length : 0) + (ventasHoy ? ventasHoy.length : 0);
 
+                // Obtener odómetro final de ayer para asegurar que el inicial de hoy sea exacto
+                let fechaAyerObj = new Date(anio, parseInt(mes) - 1, parseInt(dia) - 1);
+                let anioA = fechaAyerObj.getFullYear();
+                let mesA = String(fechaAyerObj.getMonth() + 1).padStart(2, '0');
+                let diaA = String(fechaAyerObj.getDate()).padStart(2, '0');
+                let fechaAyerStr = `${anioA}-${mesA}-${diaA}`;
+
+                const { data: cierreAyerReg } = await _supabase.from('cierre_diario_cisterna').select('odometro_final').eq('fecha', fechaAyerStr).maybeSingle();
+                let odometroInicialDelDia = cierreAyerReg ? (parseFloat(cierreAyerReg.odometro_final) || 0) : odometroFinalBomba - litros;
+
                 if (totalMovsHoy === 0) {
-                    let odometroCisternaParaGuardar = odometroFinalBomba - litros;
-                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_inicial: odometroCisternaParaGuardar, odometro_final: odometroFinalBomba }], { onConflict: ['fecha'] });
-                    await verificarYProcesarCierreCisterna(odometroCisternaParaGuardar, fechaSoloHoy);
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ 
+                        fecha: fechaSoloHoy, 
+                        odometro_inicial: odometroInicialDelDia, 
+                        odometro_final: odometroFinalBomba 
+                    }], { onConflict: ['fecha'] });
+                    await verificarYProcesarCierreCisterna(odometroInicialDelDia, fechaSoloHoy);
                 } else {
-                    // UPSERT: Sobreescribe limpiamente el odómetro final en el cierre diario de cisterna
-                    await _supabase.from('cierre_diario_cisterna').upsert([{ fecha: fechaSoloHoy, odometro_final: odometroFinalBomba }], { onConflict: ['fecha'] });
+                    // Mantener el odómetro inicial existente del día y actualizar únicamente el odómetro final
+                    const { data: regActualHoy } = await _supabase.from('cierre_diario_cisterna').select('odometro_inicial').eq('fecha', fechaSoloHoy).maybeSingle();
+                    let iniHoy = regActualHoy ? (parseFloat(regActualHoy.odometro_inicial) || odometroInicialDelDia) : odometroInicialDelDia;
+
+                    await _supabase.from('cierre_diario_cisterna').upsert([{ 
+                        fecha: fechaSoloHoy, 
+                        odometro_inicial: iniHoy, 
+                        odometro_final: odometroFinalBomba 
+                    }], { onConflict: ['fecha'] });
                 }
+
+                // CREAR PROACTIVAMENTE LA LÍNEA DEL DÍA SIGUIENTE (MAÑANA) CON ESTE MISMO ODÓMETRO FINAL
+                let fechaMañanaObj = new Date(anio, parseInt(mes) - 1, parseInt(dia) + 1);
+                let anioM = fechaMañanaObj.getFullYear();
+                let mesM = String(fechaMañanaObj.getMonth() + 1).padStart(2, '0');
+                let diaM = String(fechaMañanaObj.getDate()).padStart(2, '0');
+                let fechaMañanaStr = `${anioM}-${mesM}-${diaM}`;
+
+                await _supabase.from('cierre_diario_cisterna').upsert([{
+                    fecha: fechaMañanaStr,
+                    odometro_inicial: odometroFinalBomba,
+                    odometro_final: odometroFinalBomba,
+                    observacion: 'Generado automáticamente por carga en curso'
+                }], { onConflict: ['fecha'] });
 
                 const datosVehiculo = diccionarioVehiculos[patente] || { tipo: 'GENERAL', marca_modelo: 'NO ESPECIFICADO', conductor_titular: 'SIN ASIGNAR' };
 
@@ -374,7 +434,7 @@
 
                 if (errInsert) throw errInsert;
 
-                alert('¡Carga a flota registrada con éxito y control de cisterna actualizado!');
+                alert('¡Carga a flota registrada con éxito, cierre de hoy actualizado y día siguiente inicializado!');
                 window.location.href = 'mobile_index.html';
 
             } catch (err) {
@@ -386,3 +446,4 @@
     </script>
 </body>
 </html>
+```[file-tag: code-generated-file-mobile-carga-flota-dia6]
